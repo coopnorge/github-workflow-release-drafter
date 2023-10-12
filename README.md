@@ -40,12 +40,12 @@ Copy the [default configuration](https://github.com/coopnorge/.github/blob/main/
 
 When a PR is created, this workflow will check the PR title and try to assign labels to the PR based on the title. If you do not agree with the labels assigned you can assign new labels yourself.
 
-Supported labels for version bumping:
+Supported labels for version bumping (only one label is taken into account, in order):
 
 ```
-- "patch" # bump 0.0.X
-- "minor" # bump 0.X.0
 - "major" # bump X.0.0
+- "minor" # bump 0.X.0
+- "patch" # bump 0.0.X
 ```
 
 Supported labels to help with changelog grouping:

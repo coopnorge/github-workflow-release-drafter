@@ -22,10 +22,6 @@ on:
         description: The path to the go.mod file
         required: false
         default: go.mod
-    secrets:
-      GITHUB_TOKEN:
-        description: Token
-        required: true
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: false

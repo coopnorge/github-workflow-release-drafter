@@ -17,10 +17,6 @@ on:
         description: Publish the release draft. Defaults to false.
         required: false
         default: 'false'
-    secrets:
-      GITHUB_TOKEN:
-        description: Token
-        required: true
 concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: false

@@ -68,7 +68,7 @@ When you are ready to release, you can publish the release draft. This will crea
 Supported configuration options:
 
 | Option | Description| Required | Default |
-| :---: | :---: | :---: |
+| :---: | :--- | :---: | :---: |
 | `config-name` | The name of the configuration file to use| `false` | `release-drafter.yml` |
 | `commitish` | Commitish to use when calculating the version bump. Defaults to the pull request base branch. | `false` | `main` |
 | `publish` | Publish the release draft when the PR is merged. | `false` | `false` |

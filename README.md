@@ -27,7 +27,7 @@ jobs:
       pull-requests: write
       contents: write
     uses: >-
-      coopnorge/github-workflows-release-drafter/.github/workflows/release-drafter.yaml@main
+      coopnorge/github-workflows-release-drafter/.github/workflows/release-drafter.yaml@9d47c40559c78b2e314357fd99a5eca428eb5481
     secrets: inherit
 ```
 
@@ -60,6 +60,8 @@ Supported labels to help with changelog grouping:
 After you have merged the PR, the draft release will be created/updated. The draft release will be based on the PRs merged since the last release. The draft release will also contain a changelog based on the PRs merged.
 
 When you are ready to release, you can publish the release draft. This will create a new release and tag the release with the version number.
+
+**NOTE:** For golang project(`release-drafter-go.yaml`), the workflow try to check if exported interfaces are compatible or not using, [apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff). If any exported interfaces is not compatible, the workflow will add a label `major` to the PR. If all exported interfaces are compatible, the workflow will add a label `minor` to the PR. And if there are no changes to exported interfaces, the workflow will add a label `patch` to the PR.
 
 ## Configuration
 

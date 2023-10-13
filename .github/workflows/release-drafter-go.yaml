@@ -1,0 +1,105 @@
+on:
+  workflow_call:
+    inputs:
+      config-name:
+        type: string
+        description: >-
+          Config filename. This should either be present in your repository's
+          .github folder or .github repo's .github folder.
+        required: false
+        default: release-drafter.yml
+      commitish:
+        type: string
+        description: >-
+          Commitish to use when calculating the version bump. Defaults to the
+          pull request base branch.
+        required: false
+        default: main
+      publish:
+        type: boolean
+        description: Publish the release draft. Defaults to false.
+        required: false
+        default: false
+      project-path:
+        type: string
+        description: The path to go project
+        required: false
+        default: .
+    secrets:
+      PERSONAL_ACCESS_TOKEN:
+        required: true
+jobs:
+  label-pr-go:
+    if: github.event_name == 'pull_request'
+    name: Label PR (Golang)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+        env:
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      - uses: actions/setup-go@v4
+        with:
+          go-version-file: '${{ inputs.project-path }}/go.mod'
+      - name: Install API DIff
+        run: go install golang.org/x/exp/cmd/apidiff@latest
+      - name: Get PR diff
+        id: apidiff
+        run: |
+          cd ${{ inputs.project-path }}
+          git diff --name-only origin/main HEAD | grep '\.go$' > changes.txt
+          if [ -s changes.txt ]; then
+            echo "Detected Go changes. Checking API diff..."
+
+            apidiff -w new.txt .
+
+            git checkout origin/main
+            apidiff -w old.txt .
+
+            DIFFERENCE=$(apidiff old.txt new.txt)
+            if [ "$DIFFERENCE" != "" ]; then
+              echo "API diff detected. $DIFFERENCE"
+
+              if echo "$DIFFERENCE" | grep -q -i "incompatible change"; then
+                echo "Incompatible API change detected."
+                echo "semver-type=major" >> $GITHUB_OUTPUT
+              elif echo "$DIFFERENCE" | grep -q -i "compatible change"; then
+                echo "Compatible API change detected."
+                echo "semver-type=minor" >> $GITHUB_OUTPUT
+              else
+                echo "Non-breaking API change detected."
+                echo "semver-type=patch" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "No API diff detected."
+              echo "semver-type=patch" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "No Go changes detected."
+            echo "semver-type=patch" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/github-script@v6
+        if: github.event_name == 'pull_request'
+        env:
+          LABEL: '${{ steps.apidiff.outputs.semver-type }}'
+          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          script: |
+            const { LABEL } = process.env;
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: [`${LABEL}`]
+            })
+  draft-release:
+    name: Draft Release
+    uses: >-
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@5f4750d814e5a92e08484cf0dc28deb9eeb47583
+    secrets:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+    with:
+      config-name: '${{ inputs.config-name }}'
+      commitish: '${{ inputs.commitish }}'
+      publish: ${{ inputs.publish }}

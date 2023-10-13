@@ -1,4 +1,4 @@
-on:
+'on':
   workflow_call:
     inputs:
       config-name:
@@ -24,13 +24,12 @@ concurrency:
   group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: false
 jobs:
-  update-release-draft:
+  update-release-draft: null
   runs-on: ubuntu-latest
   steps:
-    - uses: >-
-      release-drafter/release-drafter@65c5fb495d1e69aa8c08a3317bc44ff8aabe9772
-    secrets: inherit
-    with:
-      commitish: '${{ inputs.commitish }}'
-      config-name: '${{ inputs.config-name }}'
-      publish: '${{ inputs.publish }}'
+    - uses: release-drafter/release-drafter@65c5fb495d1e69aa8c08a3317bc44ff8aabe9772
+      secrets: inherit
+      with:
+        commitish: '${{ inputs.commitish }}'
+        config-name: '${{ inputs.config-name }}'
+        publish: '${{ inputs.publish }}'

@@ -2,21 +2,24 @@ on:
   workflow_call:
     inputs:
       config-name:
+        type: string
         description: >-
           Config filename. This should either be present in your repository's
           .github folder or .github repo's .github folder.
         required: false
         default: release-drafter.yml
       commitish:
+        type: string
         description: >-
           Commitish to use when calculating the version bump. Defaults to the
           pull request base branch.
         required: false
         default: main
       publish:
+        type: boolean
         description: Publish the release draft. Defaults to false.
         required: false
-        default: 'false'
+        default: false
       go-version-file:
         type: string
         description: The path to the go.mod file
@@ -61,4 +64,4 @@ jobs:
     inputs:
       config-name: '${{ inputs.config-name }}'
       commitish: '${{ inputs.commitish }}'
-      publish: '${{ inputs.publish }}'
+      publish: ${{ inputs.publish }}

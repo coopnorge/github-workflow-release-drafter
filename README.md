@@ -27,7 +27,7 @@ jobs:
       pull-requests: write
       contents: write
     uses: >-
-      coopnorge/engineering-github-actions/.github/workflows/release-drafter.yaml@main
+      coopnorge/github-workflows-release-drafter/.github/workflows/release-drafter.yaml@main
     secrets: inherit
 ```
 

@@ -31,7 +31,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   label-pr-go:
-    if: github.event_name == "pull_request"
+    if: ${{ github.event_name == "pull_request" }}
     name: Label PR (Golang)
     runs-on: ubuntu-latest
     steps:

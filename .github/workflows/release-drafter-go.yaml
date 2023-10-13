@@ -20,11 +20,6 @@ on:
         description: Publish the release draft. Defaults to false.
         required: false
         default: false
-      go-version-file:
-        type: string
-        description: The path to the go.mod file
-        required: false
-        default: go.mod
       project-path:
         type: string
         description: The path to github project
@@ -46,7 +41,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - uses: actions/setup-go@v4
         with:
-          go-version-file: '${{ inputs.go-version-file }}'
+          go-version-file: '${{ inputs.project-path }}/go.mod'
       - name: Install API DIff
         run: go install golang.org/x/exp/cmd/apidiff@latest
       - name: Get PR diff

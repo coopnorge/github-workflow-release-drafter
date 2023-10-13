@@ -1,30 +1,33 @@
----
-on:
+'on':
   workflow_call:
     inputs:
       config-name:
-        description: "Config filename. This should either be present in your repository's .github folder or .github repo's .github folder."
+        description: >-
+          Config filename. This should either be present in your repository's
+          .github folder or .github repo's .github folder.
         required: false
-        default: "release-drafter.yml'
+        default: release-drafter.yml
       commitish:
-        description: "Commitish to use when calculating the version bump. Defaults to the pull request base branch."
+        description: >-
+          Commitish to use when calculating the version bump. Defaults to the
+          pull request base branch.
         required: false
-        default: "main'
+        default: main
       publish:
-        description: "Publish the release draft. Defaults to false."
+        description: Publish the release draft. Defaults to false.
         required: false
-        default: "false'
+        default: 'false'
       go-version-file:
         type: string
-        description: "The path to the go.mod file"
+        description: The path to the go.mod file
         required: false
-        default: "go.mod"
+        default: go.mod
     secrets:
       GITHUB_TOKEN:
-        description: "Token"
+        description: Token
         required: true
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: '${{ github.workflow }}-${{ github.ref }}'
   cancel-in-progress: false
 jobs:
   label-pr-go:
@@ -37,16 +40,14 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v4
         with:
-          go-version-file: ${{ inputs.go-version-file }}
+          go-version-file: '${{ inputs.go-version-file }}'
       - uses: joelanford/go-apidiff@main
         id: apidiff
-        # Since, go-apidiff returns non-zero exit code if the changes are incompatible
-        # we can quietly continue on error and use the output to determine the semver type
         continue-on-error: true
       - uses: actions/github-script@v6
         if: github.event_name == "pull_request"
         env:
-          LABEL: ${{ steps.apidiff.outputs.semver-type }}
+          LABEL: '${{ steps.apidiff.outputs.semver-type }}'
         with:
           script: |
             const { LABEL } = process.env;
@@ -62,6 +63,6 @@ jobs:
       coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@main
     secrets: inherit
     inputs:
-      config-name: ${{ inputs.config-name }}
-      commitish: ${{ inputs.commitish }}
-      publish: ${{ inputs.publish }}
+      config-name: '${{ inputs.config-name }}'
+      commitish: '${{ inputs.commitish }}'
+      publish: '${{ inputs.publish }}'

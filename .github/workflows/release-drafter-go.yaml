@@ -31,7 +31,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   label-pr-go:
-    if: ${{ github.event_name == "pull_request" }}
+    if: github.event_name == 'pull_request'
     name: Label PR (Golang)
     runs-on: ubuntu-latest
     steps:
@@ -45,7 +45,7 @@ jobs:
         id: apidiff
         continue-on-error: true
       - uses: actions/github-script@v6
-        if: github.event_name == "pull_request"
+        if: github.event_name == 'pull_request'
         env:
           LABEL: '${{ steps.apidiff.outputs.semver-type }}'
         with:

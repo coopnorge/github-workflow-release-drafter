@@ -25,9 +25,9 @@ on:
         description: The path to the go.mod file
         required: false
         default: go.mod
-      repo-path:
+      project-path:
         type: string
-        description: The path to the repository
+        description: The path to github project
         required: false
         default: .
     secrets:
@@ -47,15 +47,38 @@ jobs:
       - uses: actions/setup-go@v4
         with:
           go-version-file: '${{ inputs.go-version-file }}'
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      - uses: joelanford/go-apidiff@main
+      - name: Install API DIff
+        run: go install golang.org/x/exp/cmd/apidiff@latest
+      - name: Get PR diff
         id: apidiff
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-        with:
-          repo-path: '${{ inputs.repo-path }}'
+        run: |
+          git diff --name-only origin/main HEAD | grep '\.go$' > changes.txt
+          if [ -s changes.txt ]; then
+            echo "Detected Go changes. Checking API diff..."
+
+            apidiff -w new.txt .
+
+            git checkout origin/main
+            apidiff -w old.txt .
+
+            DIFFERENCE=$(apidiff old.txt new.txt)
+            if [ "$DIFFERENCE" != "" ]; then
+              echo "API diff detected. $DIFFERENCE"
+
+              if echo "$DIFFERENCE" | grep -q "incompatible change"; then
+                echo "Incompatible API change detected."
+                echo "::set-output name=semver-type::major"
+              elif echo "$DIFFERENCE" | grep -q "compatible change"; then
+                echo "Compatible API change detected."
+                echo "::set-output name=semver-type::minor"
+              else
+                echo "Non-breaking API change detected."
+                echo "::set-output name=semver-type::patch"
+              fi
+            else
+              echo "No API diff detected."
+              echo "::set-output name=semver-type::patch"
+            fi
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:

@@ -63,7 +63,9 @@ After you have merged the PR, the draft release will be created/updated. The dra
 
 When you are ready to release, you can publish the release draft. This will create a new release and tag the release with the version number.
 
-## release-drafter.yml
+## Configuration
+
+### release-drafter.yml
 
 Supported configuration options:
 
@@ -72,3 +74,14 @@ Supported configuration options:
 | `config-name` | The name of the configuration file to use| `false` | `release-drafter.yml` |
 | `commitish` | Commitish to use when calculating the version bump. Defaults to the pull request base branch. | `false` | `main` |
 | `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
+
+### release-drafter-go.yml
+
+Supported configuration options:
+
+| Option | Description| Required | Default |
+| :---: | :--- | :---: | :---: |
+| `config-name` | The name of the configuration file to use| `false` | `release-drafter.yml` |
+| `commitish` | Commitish to use when calculating the version bump. Defaults to the pull request base branch. | `false` | `main` |
+| `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
+| `go-version-file` | The path to the go version file. | `false` | `go.mod` |

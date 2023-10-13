@@ -66,7 +66,7 @@ jobs:
   draft-release:
     name: Draft Release
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@4a34a86afa468f753009c4496575def751b42146
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@5f4750d814e5a92e08484cf0dc28deb9eeb47583
     secrets:
       PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
     with:

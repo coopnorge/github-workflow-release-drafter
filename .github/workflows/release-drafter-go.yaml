@@ -25,6 +25,11 @@ on:
         description: The path to the go.mod file
         required: false
         default: go.mod
+      repo-path:
+        type: string
+        description: The path to the repository
+        required: false
+        default: .
     secrets:
       PERSONAL_ACCESS_TOKEN:
         required: true
@@ -49,6 +54,8 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        with:
+          repo-path: '${{ inputs.repo-path }}'
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:

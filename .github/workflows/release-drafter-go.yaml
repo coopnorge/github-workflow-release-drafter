@@ -59,7 +59,7 @@ jobs:
   draft-release:
     name: Draft Release
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@0eacab0b06d05d18af79eefd5a55f822d2de8423
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@db725254a8a02227c1b78691d88a37f5edfccc36
     secrets: inherit
     with:
       config-name: '${{ inputs.config-name }}'

@@ -20,9 +20,6 @@
         description: Publish the release draft. Defaults to false.
         required: false
         default: false
-concurrency:
-  group: '${{ github.workflow }}-${{ github.ref }}'
-  cancel-in-progress: false
 jobs:
   update-release-draft:
     runs-on: ubuntu-latest

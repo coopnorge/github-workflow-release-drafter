@@ -68,21 +68,21 @@ jobs:
 
               if echo "$DIFFERENCE" | grep -q "incompatible change"; then
                 echo "Incompatible API change detected."
-                echo "::set-output name=semver-type::major"
+                echo "semver-type=major" >> $GITHUB_OUTPUT
               elif echo "$DIFFERENCE" | grep -q "compatible change"; then
                 echo "Compatible API change detected."
-                echo "::set-output name=semver-type::minor"
+                echo "semver-type=minor" >> $GITHUB_OUTPUT
               else
                 echo "Non-breaking API change detected."
-                echo "::set-output name=semver-type::patch"
+                echo "semver-type=patch" >> $GITHUB_OUTPUT
               fi
             else
               echo "No API diff detected."
-              echo "::set-output name=semver-type::patch"
+              echo "semver-type=patch" >> $GITHUB_OUTPUT
             fi
           else
             echo "No Go changes detected."
-            echo "::set-output name=semver-type::patch"
+            echo "semver-type=patch" >> $GITHUB_OUTPUT
           fi
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'

@@ -3,17 +3,17 @@ on:
   workflow_call:
     inputs:
       config-name:
-        description: 'Config filename. This should either be present in your repository's .github folder or .github repo's .github folder.'
+        description: "Config filename. This should either be present in your repository's .github folder or .github repo's .github folder."
         required: false
-        default: 'release-drafter.yml'
+        default: "release-drafter.yml'
       commitish:
-        description: 'Commitish to use when calculating the version bump. Defaults to the pull request base branch.'
+        description: "Commitish to use when calculating the version bump. Defaults to the pull request base branch."
         required: false
-        default: 'main'
+        default: "main'
       publish:
-        description: 'Publish the release draft. Defaults to false.'
+        description: "Publish the release draft. Defaults to false."
         required: false
-        default: 'false'
+        default: "false'
       go-version-file:
         type: string
         description: "The path to the go.mod file"
@@ -21,14 +21,14 @@ on:
         default: "go.mod"
     secrets:
       GITHUB_TOKEN:
-        description: 'Token'
+        description: "Token"
         required: true
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   label-pr-go:
-    if: github.event_name == 'pull_request'
+    if: github.event_name == "pull_request"
     name: Label PR (Golang)
     runs-on: ubuntu-latest
     steps:
@@ -44,7 +44,7 @@ jobs:
         # we can quietly continue on error and use the output to determine the semver type
         continue-on-error: true
       - uses: actions/github-script@v6
-        if: github.event_name == 'pull_request'
+        if: github.event_name == "pull_request"
         env:
           LABEL: ${{ steps.apidiff.outputs.semver-type }}
         with:

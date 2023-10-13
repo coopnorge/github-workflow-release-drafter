@@ -61,7 +61,7 @@ jobs:
     uses: >-
       coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@2cd0100739e84c774027940afdaa139d18d9b263
     secrets: inherit
-    inputs:
+    with:
       config-name: '${{ inputs.config-name }}'
       commitish: '${{ inputs.commitish }}'
       publish: ${{ inputs.publish }}

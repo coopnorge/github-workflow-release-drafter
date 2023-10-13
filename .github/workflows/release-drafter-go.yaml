@@ -80,6 +80,10 @@ jobs:
               echo "No API diff detected."
               echo "::set-output name=semver-type::patch"
             fi
+          else
+            echo "No Go changes detected."
+            echo "::set-output name=semver-type::patch"
+          fi
       - uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:

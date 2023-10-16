@@ -20,4 +20,5 @@ jobs:
       pull-requests: write
       contents: write
     uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@f603395404b67588bd0891dd37962abe571a70e7
-    secrets: inherit
+    secrets:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -1,4 +1,4 @@
-# Release Drafter Github Workflow
+# Release Drafter GitHub Actions Workflow
 
 This workflow will create a release draft based on the PRs merged since
 the last release. It will also create a changelog based on the PRs merged.

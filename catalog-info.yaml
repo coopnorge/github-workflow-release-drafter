@@ -8,7 +8,7 @@ metadata:
     It will also try to assign labels to PR based on the title of the PR.
   annotations:
     github.com/project-slug: coopnorge/github-workflow-release-drafter
-    backstage.io/techdocs-ref: dir:. # This is where TechDocs looks for mkdocs.yml
+    backstage.io/techdocs-ref: dir:.
 spec:
   type: library
   lifecycle: experimental

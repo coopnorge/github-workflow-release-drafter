@@ -15,7 +15,7 @@ concurrency:
 permissions:
   contents: read
 jobs:
-  release-draft:
+  build:
     permissions:
       pull-requests: write
       contents: write

@@ -1,0 +1,15 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: github-workflow-release-drafter
+  title: github-workflow-release-drafter
+  description: |
+    This workflow will create a release draft based on the PRs merged since the last release. It will also create a changelog based on the PRs merged.
+    It will also try to assign labels to PR based on the title of the PR.
+  annotations:
+    github.com/project-slug: coopnorge/github-workflow-release-drafter
+    backstage.io/techdocs-ref: dir:. # This is where TechDocs looks for mkdocs.yml
+spec:
+  type: library
+  lifecycle: experimental
+  owner: platform-guild

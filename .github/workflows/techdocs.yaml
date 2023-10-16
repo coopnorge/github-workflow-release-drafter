@@ -1,7 +1,6 @@
 name: TechDocs
 on:
   push: {}
-  pull_request: {}
 jobs:
   techdocs:
     permissions:

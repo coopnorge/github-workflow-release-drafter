@@ -12,8 +12,7 @@ plugins:
   - ezlinks:
       warn_ambiguities: true
   - kroki
-  - table-reader:
-      base_path: "docs_dir"
+  - glightbox
 markdown_extensions:
   - admonition
   - attr_list

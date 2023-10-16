@@ -30,7 +30,7 @@ jobs:
       pull-requests: write
       contents: write
     uses: >-
-      coopnorge/github-workflows-release-drafter/.github/workflows/release-drafter.yaml@9d47c40559c78b2e314357fd99a5eca428eb5481
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@9d47c40559c78b2e314357fd99a5eca428eb5481
     secrets:
       PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```

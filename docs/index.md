@@ -1,12 +1,15 @@
 # Release Drafter Github Workflow
 
-This workflow will create a release draft based on the PRs merged since the last release. It will also create a changelog based on the PRs merged.
+This workflow will create a release draft based on the PRs merged since
+the last release. It will also create a changelog based on the PRs merged.
 
-It will also try to assign labels to PR based on the title of the PR. The labels is defined [here](.github/release-drafter.yml)
+It will also try to assign labels to PR based on the title of the PR.
+The labels is defined [here](.github/release-drafter.yml)
 
 ## Usage
 
 1. Create a `.github/workflows/release-drafter.yaml` file in your repository
+
 ```yaml
 name: Release Drafter
 on:
@@ -32,36 +35,46 @@ jobs:
 ```
 
 2. Create a `.github/release-drafter.yml` file in your repository.
-Copy the [default configuration](.github/release-drafter.yml) and modify it to your needs.
+Copy the [default configuration](.github/release-drafter.yml) and
+modify it to your needs.
 
 ## How it works
 
-When a PR is created, this workflow will check the PR title and try to assign labels to the PR based on the title. If you do not agree with the labels assigned you can assign new labels yourself.
+When a PR is created, this workflow will check the PR title and
+try to assign labels to the PR based on the title. If you do not agree
+with the labels assigned you can assign new labels yourself.
 
 Supported labels for version bumping (only one label is taken into account, in order):
 
-```
-- "major" # bump X.0.0
-- "minor" # bump 0.X.0
-- "patch" # bump 0.0.X
-```
+- "major" (bump X.0.0)
+- "minor" (bump 0.X.0)
+- "patch" (bump 0.0.X)
 
 Supported labels to help with changelog grouping:
   
-```
 - "dependency"
 - "chore"
 - "enhancements"
 - "bug-fix"
 - "deprecation"
 - "breaking-change"
-```
 
-After you have merged the PR, the draft release will be created/updated. The draft release will be based on the PRs merged since the last release. The draft release will also contain a changelog based on the PRs merged.
+After you have merged the PR, the draft release will be created/updated.
+The draft release will be based on the PRs merged since the last release.
+The draft release will also contain a changelog based on the PRs merged.
 
-When you are ready to release, you can publish the release draft. This will create a new release and tag the release with the version number.
+When you are ready to release, you can publish the release draft.
+This will create a new release and tag the release with the version number.
 
-**NOTE:** For golang project(`release-drafter-go.yaml`), the workflow try to check if exported interfaces are compatible or not using, [apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff). If any exported interfaces is not compatible, the workflow will add a label `major` to the PR. If all exported interfaces are compatible, the workflow will add a label `minor` to the PR. And if there are no changes to exported interfaces, the workflow will add a label `patch` to the PR.
+**NOTE:** For golang project(`release-drafter-go.yaml`),
+the workflow try to check if exported interfaces are compatible or not using,
+[apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff).
+If any exported interfaces is not compatible,
+the workflow will add a label `major` to the PR.
+If all exported interfaces are compatible,
+the workflow will add a label `minor` to the PR.
+And if there are no changes to exported interfaces,
+the workflow will add a label `patch` to the PR.
 
 ## Configuration
 

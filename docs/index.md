@@ -31,7 +31,8 @@ jobs:
       contents: write
     uses: >-
       coopnorge/github-workflows-release-drafter/.github/workflows/release-drafter.yaml@9d47c40559c78b2e314357fd99a5eca428eb5481
-    secrets: inherit
+    secrets:
+      PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 ```
 
 2. Create a `.github/release-drafter.yml` file in your repository.
@@ -80,6 +81,12 @@ the workflow will add a label `patch` to the PR.
 
 ### release-drafter.yml
 
+Required Secret:
+
+| Secret | Description |
+| :---: | :--- |
+| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. |
+
 Supported configuration options:
 
 | Option | Description| Required | Default |
@@ -89,6 +96,12 @@ Supported configuration options:
 | `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
 
 ### release-drafter-go.yml
+
+Required Secret:
+
+| Secret | Description |
+| :---: | :--- |
+| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. |
 
 Supported configuration options:
 

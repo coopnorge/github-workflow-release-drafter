@@ -51,18 +51,18 @@ autolabeler:
     title:
       # matches in format of "fix: ..."
       # or "fix(scope): ..."
-      - "/^(?:fix|chore|docs|doc|refactor|test|deprecated)(?:\((?:[^)]+)\))?:\s.*/i"
+      - '/^(?:fix|chore|docs|doc|refactor|test|deprecated)(?:\((?:[^)]+)\))?:\s.*/i'
   - label: "minor"
     title:
       # matches in format of "feat: ..."
       # or "feat(scope): ..."
-      - "/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i"
+      - '/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i'
   - label: "major"
     title:
       # matches in format of "fix!: ..."
       # or "fix!(scope): ..."
       # or "fix(scope)!: ..."
-      - "/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i"
+      - '/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i'
     body:
       - "/BREAKING CHANGE:/"
   # labels to help with changelog grouping
@@ -71,19 +71,19 @@ autolabeler:
       - "/^Bump/" # Dependency update PR by depandabot
   - label: "chore"
     title:
-      - "/^(?:docs|doc|chore|refactor|test)(?:\((?:[^)]+)\))?:\s.*/i"
+      - '/^(?:docs|doc|chore|refactor|test)(?:\((?:[^)]+)\))?:\s.*/i'
   - label: "enhancements"
     title:
-      - "/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i"
+      - '/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i'
   - label: "bug-fix"
     title:
-      - "/^fix(?:\((?:[^)]+)\))?:\s.*/i"
+      - '/^fix(?:\((?:[^)]+)\))?:\s.*/i'
   - label: "deprecation"
     title:
-      - "/^deprecated(?:\((?:[^)]+)\))?:\s.*/i"
+      - '/^deprecated(?:\((?:[^)]+)\))?:\s.*/i'
   - label: "breaking-change"
     title:
-      - "/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i"
+      - '/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i'
     body:
       - "/BREAKING CHANGE:/"
 template: |

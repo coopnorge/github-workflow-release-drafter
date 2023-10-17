@@ -30,7 +30,7 @@ jobs:
       pull-requests: write
       contents: write
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@908e9c0cdafacdb1599adc029e80e3205b480a16
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.1.0
 ```
 
 **OR** for golang project
@@ -54,7 +54,7 @@ jobs:
     permissions:
       pull-requests: write
       contents: write
-    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@908e9c0cdafacdb1599adc029e80e3205b480a16
+    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@v0.1.0
     with:
       project-path: "./go-playground"
 ```

@@ -12,8 +12,6 @@
   jobs:
     release-draft:
       uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@c40fd54053e4a864ec543e3703d6c006a6a45ac2
-      secrets:
-        PERSONAL_ACCESS_TOKEN: ${{ secrets.REVIEWBOT_GITHUB_TOKEN }}
     build:
       if: always()
       needs: ['release-draft']

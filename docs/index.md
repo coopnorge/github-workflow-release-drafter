@@ -30,14 +30,49 @@ jobs:
       pull-requests: write
       contents: write
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@9d47c40559c78b2e314357fd99a5eca428eb5481
-    secrets:
-      PERSONAL_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@908e9c0cdafacdb1599adc029e80e3205b480a16
+```
+
+**OR** for golang project
+
+```yaml
+name: Release Drafter
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+permissions:
+  contents: read
+jobs:
+  release-draft:
+    permissions:
+      pull-requests: write
+      contents: write
+    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@908e9c0cdafacdb1599adc029e80e3205b480a16
+    with:
+      project-path: "./go-playground"
+```
+
+**NOTE:** As we generally have projects inside subdirectories, we need to
+specify the `project-path`.
+
+**NOTE:** Make sure to request permissions
+
+```yaml
+pull-requests: write
+contents: write
 ```
 
 2. Create a `.github/release-drafter.yml` file in your repository.
-Copy the [default configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml) and
-modify it to your needs.
+Copy the
+[default configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
+and modify it to your needs.
 
 ## How it works
 

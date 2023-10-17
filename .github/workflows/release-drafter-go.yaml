@@ -25,9 +25,6 @@ on:
         description: The path to go project
         required: false
         default: .
-    secrets:
-      PERSONAL_ACCESS_TOKEN:
-        required: true
 jobs:
   label-pr-go:
     if: github.event_name == 'pull_request'
@@ -37,8 +34,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-        env:
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       - uses: actions/setup-go@v4
         with:
           go-version-file: '${{ inputs.project-path }}/go.mod'
@@ -83,7 +78,6 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           LABEL: '${{ steps.apidiff.outputs.semver-type }}'
-          GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
         with:
           script: |
             const { LABEL } = process.env;
@@ -96,9 +90,7 @@ jobs:
   draft-release:
     name: Draft Release
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@5f4750d814e5a92e08484cf0dc28deb9eeb47583
-    secrets:
-      PERSONAL_ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@b985e96f7038ebd582eee19dd4a320f8869913b9
     with:
       config-name: '${{ inputs.config-name }}'
       commitish: '${{ inputs.commitish }}'

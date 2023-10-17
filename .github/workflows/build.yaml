@@ -16,7 +16,7 @@
       permissions:
         pull-requests: write
         contents: write
-      uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@dc10feb29e71f16f4adc9634ceaa26b7afed5ef1
+      uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.1.0
     build:
       if: always()
       needs: ['release-draft']

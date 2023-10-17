@@ -4,7 +4,7 @@ This workflow will create a release draft based on the PRs merged since
 the last release. It will also create a changelog based on the PRs merged.
 
 It will also try to assign labels to PR based on the title of the PR.
-The labels is defined [here](.github/release-drafter.yml)
+The labels is defined [here](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
 
 ## Usage
 
@@ -30,13 +30,49 @@ jobs:
       pull-requests: write
       contents: write
     uses: >-
-      coopnorge/github-workflows-release-drafter/.github/workflows/release-drafter.yaml@9d47c40559c78b2e314357fd99a5eca428eb5481
-    secrets: inherit
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@908e9c0cdafacdb1599adc029e80e3205b480a16
+```
+
+**OR** for golang project
+
+```yaml
+name: Release Drafter
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+permissions:
+  contents: read
+jobs:
+  release-draft:
+    permissions:
+      pull-requests: write
+      contents: write
+    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@908e9c0cdafacdb1599adc029e80e3205b480a16
+    with:
+      project-path: "./go-playground"
+```
+
+**NOTE:** As we generally have projects inside subdirectories, we need to
+specify the `project-path`.
+
+**NOTE:** Make sure to request permissions
+
+```yaml
+pull-requests: write
+contents: write
 ```
 
 2. Create a `.github/release-drafter.yml` file in your repository.
-Copy the [default configuration](.github/release-drafter.yml) and
-modify it to your needs.
+Copy the
+[default configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
+and modify it to your needs.
 
 ## How it works
 
@@ -80,6 +116,12 @@ the workflow will add a label `patch` to the PR.
 
 ### release-drafter.yml
 
+Required Secret:
+
+| Secret | Description |
+| :---: | :--- |
+| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. (Pass: `secrets.REVIEWBOT_GITHUB_TOKEN`) |
+
 Supported configuration options:
 
 | Option | Description| Required | Default |
@@ -89,6 +131,12 @@ Supported configuration options:
 | `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
 
 ### release-drafter-go.yml
+
+Required Secret:
+
+| Secret | Description |
+| :---: | :--- |
+| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. (Pass: `secrets.REVIEWBOT_GITHUB_TOKEN`) |
 
 Supported configuration options:
 

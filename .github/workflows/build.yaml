@@ -1,11 +1,28 @@
 ---
-on:
-  pull_request:
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo hello world
+  on:
+    push:
+      branches:
+        - main
+    pull_request:
+      types:
+        - opened
+        - reopened
+        - synchronize
+        - edited
+  permissions:
+      contents: read
+  jobs:
+    release-draft:
+      permissions:
+        pull-requests: write
+        contents: write
+      uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@dc10feb29e71f16f4adc9634ceaa26b7afed5ef1
+    build:
+      if: always()
+      needs: ['release-draft']
+      runs-on: ubuntu-latest
+      steps:
+        - run: exit 1
+          name: "Catch errors"
+          if: |
+            needs.release-draft.result == 'failure'

@@ -4,7 +4,7 @@ This workflow will create a release draft based on the PRs merged since
 the last release. It will also create a changelog based on the PRs merged.
 
 It will also try to assign labels to PR based on the title of the PR.
-The labels is defined [here](.github/release-drafter.yml)
+The labels is defined [here](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
 
 ## Usage
 
@@ -36,7 +36,7 @@ jobs:
 ```
 
 2. Create a `.github/release-drafter.yml` file in your repository.
-Copy the [default configuration](.github/release-drafter.yml) and
+Copy the [default configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml) and
 modify it to your needs.
 
 ## How it works
@@ -85,7 +85,7 @@ Required Secret:
 
 | Secret | Description |
 | :---: | :--- |
-| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. |
+| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. (Pass: `secrets.REVIEWBOT_GITHUB_TOKEN`) |
 
 Supported configuration options:
 
@@ -101,7 +101,7 @@ Required Secret:
 
 | Secret | Description |
 | :---: | :--- |
-| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. |
+| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. (Pass: `secrets.REVIEWBOT_GITHUB_TOKEN`) |
 
 Supported configuration options:
 

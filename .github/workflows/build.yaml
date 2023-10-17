@@ -9,11 +9,14 @@
         - reopened
         - synchronize
         - edited
+  permissions:
+      contents: read
   jobs:
     release-draft:
-      uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@c40fd54053e4a864ec543e3703d6c006a6a45ac2
-      secrets:
-        PERSONAL_ACCESS_TOKEN: ${{ secrets.REVIEWBOT_GITHUB_TOKEN }}
+      permissions:
+        pull-requests: write
+        contents: write
+      uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@aa5c460d5c96f9963e1ad742e2fe0ae4ffc0709b
     build:
       if: always()
       needs: ['release-draft']

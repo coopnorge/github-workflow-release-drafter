@@ -47,10 +47,10 @@ jobs:
           if [ -s changes.txt ]; then
             echo "Detected Go changes. Checking API diff..."
 
-            apidiff -w new.txt .
+            apidiff -w new.txt ./...
 
             git checkout origin/main
-            apidiff -w old.txt .
+            apidiff -w old.txt ./...
 
             DIFFERENCE=$(apidiff old.txt new.txt)
             if [ "$DIFFERENCE" != "" ]; then

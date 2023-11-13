@@ -90,7 +90,7 @@ jobs:
   draft-release:
     name: Draft Release
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.1.0
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.2.0
     with:
       config-name: '${{ inputs.config-name }}'
       commitish: '${{ inputs.commitish }}'

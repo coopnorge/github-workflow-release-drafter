@@ -34,7 +34,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v4
+      - uses: actions/setup-go@v4.1.0
         with:
           go-version-file: '${{ inputs.project-path }}/go.mod'
       - name: Install API DIff
@@ -74,7 +74,7 @@ jobs:
             echo "No Go changes detected."
             echo "semver-type=patch" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/github-script@v6
+      - uses: actions/github-script@v6.4.1
         if: github.event_name == 'pull_request'
         env:
           LABEL: '${{ steps.apidiff.outputs.semver-type }}'

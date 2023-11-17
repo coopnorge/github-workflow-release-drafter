@@ -50,7 +50,7 @@ on:
           The URL users can navigate to in order to view the release. 
           i.e. https://github.com/octocat/Hello-World/releases/v1.0.0.
       upload_url:
-        value: ${{ jobs.draft-release.outputs.html_url }}
+        value: ${{ jobs.draft-release.outputs.upload_url }}
         description: >-
           The URL for uploading assets to the release, which could be 
           used by GitHub Actions for additional uses, for example the 

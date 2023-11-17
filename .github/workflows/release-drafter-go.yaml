@@ -45,7 +45,6 @@ on:
           in files.
       html_url:
         value: ${{ jobs.draft-release.outputs.html_url }}
-        type: string
         description: >-
           The URL users can navigate to in order to view the release. 
           i.e. https://github.com/octocat/Hello-World/releases/v1.0.0.

@@ -24,12 +24,6 @@ jobs:
           # Extract vX from vX.Y.Z
           NEW_TAG=$(echo "${{ github.event.release.tag_name }}" | cut -d'.' -f1)
 
-          # Check if tag already exists and delete if it does
-          if [ $(git tag -l $NEW_TAG) ]; then
-              git tag -d $NEW_TAG
-              git push --delete origin $NEW_TAG
-          fi
-
           # Create new tag
           git tag $NEW_TAG
-          git push origin refs/tags/$NEW_TAG
+          git push origin -f --tags

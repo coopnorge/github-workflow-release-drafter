@@ -26,4 +26,4 @@ jobs:
 
           # Create new tag
           git tag -f $NEW_TAG -m "Forcing tag to match release"
-          git push origin -f --tags
+          git push origin -f $NEW_TAG

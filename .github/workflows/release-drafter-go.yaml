@@ -25,6 +25,16 @@ on:
         description: The path to go project
         required: false
         default: .
+      ignore-major-changes-for-pattern:
+        type: string
+        description: >-
+          A regular expression pattern to match against incompatible changes.
+          If incompatible changes are detected only on files matching this
+          pattern, the release drafter will not bump the major version.
+          Eg: (\S+)\/(v1beta1)\.(\S+), this will ignore incompatible changes
+          in v1beta1 in the path.
+        required: false
+        default: ''
     outputs:
       id:
         value: ${{ jobs.draft-release.outputs.id }}
@@ -86,8 +96,20 @@ jobs:
               echo "API diff detected. $DIFFERENCE"
 
               if echo "$DIFFERENCE" | grep -q -i "incompatible change"; then
-                echo "Incompatible API change detected."
-                echo "semver-type=major" >> $GITHUB_OUTPUT
+                if [ "${{ inputs.ignore-major-changes-for-pattern }}" != "" ]; then
+
+                  if apidiff -m -incompatible old.txt new.txt | grep -qvE "${{ inputs.ignore-major-changes-for-pattern }}"; then
+                    # If the change is not ignored by the pattern, bump major
+                    echo "Incompatible API change detected."
+                    echo "semver-type=major" >> $GITHUB_OUTPUT
+                  else
+                    echo "Incompatible API change detected, but ignored by pattern."
+                    echo "semver-type=minor" >> $GITHUB_OUTPUT
+                  fi
+                else
+                  echo "Incompatible API change detected."
+                  echo "semver-type=major" >> $GITHUB_OUTPUT
+                fi
               elif echo "$DIFFERENCE" | grep -q -i "compatible change"; then
                 echo "Compatible API change detected."
                 echo "semver-type=minor" >> $GITHUB_OUTPUT

@@ -146,3 +146,4 @@ Supported configuration options:
 | `commitish` | Commitish to use when calculating the version bump. Defaults to the pull request base branch. | `false` | `main` |
 | `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
 | `project-path` | The path to go project. | `false` | `.` |
+| `ignore-major-changes-for-pattern` | A regular expression pattern to match against incompatible changes. | `false` | `.` |

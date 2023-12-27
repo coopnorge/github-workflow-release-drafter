@@ -141,7 +141,7 @@ jobs:
   draft-release:
     name: Draft Release
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.3.2
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.4.0
     with:
       config-name: '${{ inputs.config-name }}'
       commitish: '${{ inputs.commitish }}'

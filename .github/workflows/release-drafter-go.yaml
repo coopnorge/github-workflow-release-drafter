@@ -136,7 +136,7 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: [`${LABEL}`]
+              labels: [`release-drafter-go:${LABEL}`]
             })
   draft-release:
     name: Draft Release

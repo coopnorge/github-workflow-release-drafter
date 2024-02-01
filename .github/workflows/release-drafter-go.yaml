@@ -136,12 +136,12 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: [`${LABEL}`]
+              labels: [`release-drafter-go:${LABEL}`]
             })
   draft-release:
     name: Draft Release
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.3.2
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.5.0
     with:
       config-name: '${{ inputs.config-name }}'
       commitish: '${{ inputs.commitish }}'

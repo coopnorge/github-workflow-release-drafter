@@ -61,7 +61,7 @@ jobs:
         html_url: ${{ steps.update-release-draft.outputs.html_url }}
         upload_url: ${{ steps.update-release-draft.outputs.upload_url }}
     steps:
-      - uses: release-drafter/release-drafter@v5.25.0
+      - uses: release-drafter/release-drafter@v6.0.0
         id: update-release-draft
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

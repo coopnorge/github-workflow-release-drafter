@@ -34,7 +34,7 @@ on:
           Eg: (\S+)\/(v1beta1)\.(\S+), this will ignore incompatible changes
           in v1beta1 in the path.
         required: false
-        default: ''
+        default: ""
     outputs:
       id:
         value: ${{ jobs.draft-release.outputs.id }}
@@ -75,7 +75,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v5.0.0
         with:
-          go-version-file: '${{ inputs.project-path }}/go.mod'
+          go-version-file: "${{ inputs.project-path }}/go.mod"
       - name: Install API DIff
         run: go install golang.org/x/exp/cmd/apidiff@latest
       - name: Get PR diff
@@ -126,9 +126,51 @@ jobs:
             echo "semver-type=patch" >> $GITHUB_OUTPUT
           fi
       - uses: actions/github-script@v7.0.1
+        if: ${{ steps.apidiff.outputs.semver-type == 'major' }}
+        name: "Check if breaking-change-reviewed label is set"
+        id: labels
+        with:
+          script: |
+            const labels = github.rest.issues.listLabelsOnIssue({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo
+            })
+            const breakingChangeReviewed = labels.filter((label) => {
+              return label === "breaking-change-reviewed";
+            })
+            core.setOutput('breaking-change-reviewed', breakingChangeReviewed)
+      - uses: actions/github-script@v7.0.1
+        if: ${{ steps.labels.outputs.breaking-change-reviewed == false && steps.apidiff.outputs.semver-type == 'major' }}
+        with:
+          # We are going to get a file in the PR,
+          # We need a file for the PR comment as
+          # creating review requires it
+          # and create a comment in the PR requesting for change
+          # TODO: As an improvement, we can directly comment on the files(s)
+          # that introduced the breaking changes.
+          # For now, the comment is on a file(the first one)
+          script: |
+            const changedFiles = github.rest.pulls.listFiles({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            })
+            const fileName = changedFiles[0].filename;
+            github.rest.pulls.createReview({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              event: "REQUEST_CHANGE",
+              comments: [{
+                path: fileName,
+                body: "Breaking Change!!!!"
+              }]
+            })
+      - uses: actions/github-script@v7.0.1
         if: github.event_name == 'pull_request'
         env:
-          LABEL: '${{ steps.apidiff.outputs.semver-type }}'
+          LABEL: "${{ steps.apidiff.outputs.semver-type }}"
         with:
           script: |
             const { LABEL } = process.env;
@@ -143,6 +185,6 @@ jobs:
     uses: >-
       coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.5.0
     with:
-      config-name: '${{ inputs.config-name }}'
-      commitish: '${{ inputs.commitish }}'
+      config-name: "${{ inputs.config-name }}"
+      commitish: "${{ inputs.commitish }}"
       publish: ${{ inputs.publish }}

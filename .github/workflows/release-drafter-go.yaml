@@ -29,12 +29,11 @@ on:
         type: string
         description: >-
           A regular expression pattern to match against incompatible changes.
-          If incompatible changes are detected only api-diff's output 
+          If incompatible changes are detected on api-diff's output 
           matching this pattern, the release drafter will not bump the major version.
-          (\S+)\/(v1beta2)\.(\S+), this will ignore incompatible changes
-          in v1beta1 in the api-diff output, eg:
-          ./coopnorge/customerdirectory/v1beta2.(*CustomerContactInformation).GetEmailAddresses: removed
-          will be ignored by the above pattern as it matches the regex provided.
+          Eg: (\S+)\/(v\d+beta\d+)\.(\S+), this will ignore incompatible changes
+          in the api-diff output, matching
+          ./coopnorge/<projectpath>/v1beta2.(<RPCNameORMessageName>).GetEmailAddresses: removed
         required: false
         default: ""
     outputs:

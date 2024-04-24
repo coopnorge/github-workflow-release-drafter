@@ -29,12 +29,13 @@ on:
         type: string
         description: >-
           A regular expression pattern to match against incompatible changes.
-          If incompatible changes are detected only on files matching this
-          pattern, the release drafter will not bump the major version.
-          Eg: (\S+)\/(v1beta1)\.(\S+), this will ignore incompatible changes
-          in v1beta1 in the path.
+          If incompatible changes are detected on api-diff's output 
+          matching this pattern, the release drafter will not bump the major version.
+          Eg: (\S+)\/(v\d+beta\d+)\.(\S+), this will ignore incompatible changes
+          in the api-diff output, matching
+          ./coopnorge/<projectpath>/v1beta2.(<RPCNameORMessageName>).GetEmailAddresses: removed
         required: false
-        default: ''
+        default: ""
     outputs:
       id:
         value: ${{ jobs.draft-release.outputs.id }}
@@ -75,7 +76,7 @@ jobs:
           fetch-depth: 0
       - uses: actions/setup-go@v5.0.0
         with:
-          go-version-file: '${{ inputs.project-path }}/go.mod'
+          go-version-file: "${{ inputs.project-path }}/go.mod"
       - name: Install API DIff
         run: go install golang.org/x/exp/cmd/apidiff@latest
       - name: Get PR diff
@@ -128,7 +129,7 @@ jobs:
       - uses: actions/github-script@v7.0.1
         if: github.event_name == 'pull_request'
         env:
-          LABEL: '${{ steps.apidiff.outputs.semver-type }}'
+          LABEL: "${{ steps.apidiff.outputs.semver-type }}"
         with:
           script: |
             const { LABEL } = process.env;
@@ -143,6 +144,6 @@ jobs:
     uses: >-
       coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.5.0
     with:
-      config-name: '${{ inputs.config-name }}'
-      commitish: '${{ inputs.commitish }}'
+      config-name: "${{ inputs.config-name }}"
+      commitish: "${{ inputs.commitish }}"
       publish: ${{ inputs.publish }}

@@ -34,7 +34,7 @@ on:
           (\S+)\/(v1beta2)\.(\S+), this will ignore incompatible changes
           in v1beta1 in the api-diff output, eg:
           ./coopnorge/customerdirectory/v1beta2.(*CustomerContactInformation).GetEmailAddresses: removed
-          will be ignore by the above pattern as it matches the regex provided.
+          will be ignored by the above pattern as it matches the regex provided.
         required: false
         default: ""
     outputs:

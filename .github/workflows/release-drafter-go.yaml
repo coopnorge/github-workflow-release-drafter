@@ -81,10 +81,12 @@ jobs:
         with:
           go-version-file: "${{ inputs.project-path }}/go.mod"
       - name: Configure access to internal and private GitHub repos
-        env:
-          GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_OAUTH_TOKEN }}
-        if: ${{ env.GITHUB_OAUTH_TOKEN != '' }}
-        run: git config --global url."https://${{ secrets.GITHUB_OAUTH_TOKEN }}:x-oauth-basic@github.com/coopnorge".insteadOf "https://github.com/coopnorge"
+        run: |
+          if [ -n "${{ secrets.GITHUB_OAUTH_TOKEN }}" ]; then
+            git config --global url."https://${{ secrets.GITHUB_OAUTH_TOKEN }}:x-oauth-basic@github.com/coopnorge".insteadOf "https://github.com/coopnorge";
+          else
+            echo "GITHUB_OAUTH_TOKEN is not set. Skipping Git configuration.";
+          fi
       - name: Install API DIff
         run: go install golang.org/x/exp/cmd/apidiff@latest
       - name: Get PR diff

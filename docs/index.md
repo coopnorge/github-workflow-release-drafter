@@ -66,7 +66,8 @@ specify the `project-path`.
 
 **NOTE:** Make sure to request permissions
 
-**NOTE:** GITHUB_OAUTH_TOKEN should be supplied if you reference other internal/private repositories
+**NOTE:** GITHUB_OAUTH_TOKEN should be supplied if you reference other 
+internal/private repositories
 
 ```yaml
 pull-requests: write

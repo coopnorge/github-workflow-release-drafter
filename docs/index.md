@@ -69,6 +69,7 @@ specify the `project-path`.
 **NOTE:** GITHUB_OAUTH_TOKEN should be supplied if you reference other 
 internal/private repositories
 
+
 ```yaml
 pull-requests: write
 contents: write

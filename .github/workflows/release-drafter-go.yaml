@@ -1,5 +1,8 @@
 on:
   workflow_call:
+    secrets:
+      GITHUB_OAUTH_TOKEN:
+        required: false
     inputs:
       config-name:
         type: string
@@ -77,6 +80,11 @@ jobs:
       - uses: actions/setup-go@v5.0.2
         with:
           go-version-file: "${{ inputs.project-path }}/go.mod"
+      - name: Configure access to internal and private GitHub repos
+        env:
+          GITHUB_OAUTH_TOKEN: ${{ secrets.GITHUB_OAUTH_TOKEN }}
+        if: ${{ env.GITHUB_OAUTH_TOKEN != '' }}
+        run: git config --global url."https://${{ secrets.GITHUB_OAUTH_TOKEN }}:x-oauth-basic@github.com/coopnorge".insteadOf "https://github.com/coopnorge"
       - name: Install API DIff
         run: go install golang.org/x/exp/cmd/apidiff@latest
       - name: Get PR diff

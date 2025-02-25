@@ -1,28 +1,28 @@
----
-  on:
-    push:
-      branches:
-        - main
-    pull_request:
-      types:
-        - opened
-        - reopened
-        - synchronize
-        - edited
-  permissions:
-      contents: read
-  jobs:
-    release-draft:
-      permissions:
-        pull-requests: write
-        contents: write
-      uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.5.2
-    build:
-      if: always()
-      needs: ['release-draft']
-      runs-on: ubuntu-latest
-      steps:
-        - run: exit 1
-          name: "Catch errors"
-          if: |
-            needs.release-draft.result == 'failure'
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - edited
+permissions:
+  contents: read
+jobs:
+  release-draft:
+    permissions:
+      pull-requests: write
+      contents: write
+    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.5.2
+  build:
+    if: always()
+    needs: ['release-draft']
+    runs-on: ubuntu-latest
+    steps:
+      - run: exit 1
+        name: "Catch errors"
+        if: |-
+          needs.release-draft.result == 'failure'
+    permissions: {}

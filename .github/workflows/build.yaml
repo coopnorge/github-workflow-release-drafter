@@ -19,7 +19,7 @@ jobs:
   build:
     if: always()
     needs: ['release-draft']
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - run: exit 1
         name: "Catch errors"

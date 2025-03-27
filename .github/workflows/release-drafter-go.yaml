@@ -87,6 +87,7 @@ jobs:
         run: |
           cd ${{ inputs.project-path }}
           TAG=$(git describe --tags --abbrev=0)
+          echo ${TAG}
           git diff --name-only ${TAG} HEAD | grep '\.go$' > changes.txt || true
           if [ -s changes.txt ]; then
             echo "Detected Go changes. Checking API diff..."

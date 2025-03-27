@@ -94,7 +94,7 @@ jobs:
 
             apidiff -m -w new.txt ./...
 
-            git checkout origin/main
+            git checkout ${TAG}
             apidiff -m -w old.txt ./...
 
             DIFFERENCE=$(apidiff -m old.txt new.txt)

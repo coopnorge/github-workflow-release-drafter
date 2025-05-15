@@ -54,11 +54,11 @@ jobs:
     permissions:
       pull-requests: write
       contents: write
-    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@v0.1.0
+      issues: write
+    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@v0.6.0
     with:
       project-path: "./go-playground"
-    secrets:
-      GITHUB_OAUTH_TOKEN: ${{ secrets.OUR_GITHUB_TOKEN }}
+    secrets: inherit
 ```
 
 **NOTE:** As we generally have projects inside subdirectories, we need to
@@ -66,7 +66,7 @@ specify the `project-path`.
 
 **NOTE:** Make sure to request permissions
 
-**NOTE:** GITHUB_OAUTH_TOKEN should be supplied if you reference other
+**NOTE:** `secrets: inherit` should be used if you reference other
 internal/private repositories
 
 ```yaml
@@ -123,9 +123,9 @@ the workflow will add a label `patch` to the PR.
 
 Required Secret:
 
-| Secret | Description |
-| :---: | :--- |
-| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. (Pass: `secrets.REVIEWBOT_GITHUB_TOKEN`) |
+|          Secret          | Description                                                                                                                                                                          |
+|:------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `REVIEWBOT_GITHUB_TOKEN` | A GitHub personal access token with `repo` scope. This secret should be defined in the caller repo or at the org level. It must be inhereted in the workflow with `secrets: inherit` |
 
 Supported configuration options:
 
@@ -139,9 +139,9 @@ Supported configuration options:
 
 Required Secret:
 
-| Secret | Description |
-| :---: | :--- |
-| `PERSONAL_ACCESS_TOKEN` | A GitHub personal access token with `repo` scope. (Pass: `secrets.REVIEWBOT_GITHUB_TOKEN`) |
+|          Secret          | Description                                                                                                                                                                          |
+|:------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `REVIEWBOT_GITHUB_TOKEN` | A GitHub personal access token with `repo` scope. This secret should be defined in the caller repo or at the org level. It must be inhereted in the workflow with `secrets: inherit` |
 
 Supported configuration options:
 

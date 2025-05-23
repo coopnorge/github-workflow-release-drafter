@@ -73,6 +73,7 @@ jobs:
       - uses: actions/setup-go@v5.5.0
         with:
           go-version-file: "${{ inputs.project-path }}/go.mod"
+          cache-dependency-path: "${{ inputs.project-path }}/go.sum"
       - name: Configure access to internal and private GitHub repos
         run: |
           if [ -n "${{ secrets.REVIEWBOT_GITHUB_TOKEN }}" ]; then

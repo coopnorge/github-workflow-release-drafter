@@ -20,6 +20,16 @@ on:
         description: Publish the release draft. Defaults to false.
         required: false
         default: false
+      ignore-major-changes-for-pattern:
+        type: string
+        description: >-
+          A regular expression pattern to match against incompatible changes.
+          If incompatible changes are detected on api-diff's output  matching this pattern, the release drafter will not bump the major version.
+          Eg: (\S+)\/(v\d+beta\d+)\.(\S+), this will ignore incompatible changes
+          in the api-diff output, matching
+          ./coopnorge/<projectpath>/v1beta2.(<RPCNameORMessageName>).GetEmailAddresses: removed
+        required: false
+        default: ""
     outputs:
       id:
         value: ${{ jobs.update-release-draft.outputs.id }}

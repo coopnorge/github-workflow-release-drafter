@@ -29,8 +29,9 @@ jobs:
     permissions:
       pull-requests: write
       contents: write
+      issues: write
     uses: >-
-      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.1.0
+      coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.8.0
 ```
 
 **OR** for golang project
@@ -55,7 +56,7 @@ jobs:
       pull-requests: write
       contents: write
       issues: write
-    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@v0.6.0
+    uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter-go.yaml@v0.8.0
     with:
       project-path: "./go-playground"
     secrets: inherit
@@ -68,11 +69,6 @@ specify the `project-path`.
 
 **NOTE:** `secrets: inherit` should be used if you reference other
 internal/private repositories
-
-```yaml
-pull-requests: write
-contents: write
-```
 
 2. Create a `.github/release-drafter.yml` file in your repository.
 Copy the

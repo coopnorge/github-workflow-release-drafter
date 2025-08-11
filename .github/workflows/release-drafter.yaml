@@ -46,6 +46,11 @@ on:
         description: >-
           The URL for uploading assets to the release, which could be  used by GitHub Actions for additional uses, for example the  @actions/upload-release-asset GitHub Action.
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
 jobs:
   update-release-draft:
     runs-on: ubuntu-24.04

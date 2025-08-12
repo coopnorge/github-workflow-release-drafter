@@ -157,3 +157,7 @@ jobs:
       config-name: "${{ inputs.config-name }}"
       commitish: "${{ inputs.commitish }}"
       publish: ${{ inputs.publish }}
+    permissions:
+      pull-requests: write
+      contents: write
+      issues: write

@@ -53,7 +53,7 @@ permissions:
 
 jobs:
   update-release-draft:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     outputs:
       id: ${{ steps.update-release-draft.outputs.id }}
       name: ${{ steps.update-release-draft.outputs.name }}

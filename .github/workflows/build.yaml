@@ -8,8 +8,10 @@ on:
       - reopened
       - synchronize
       - edited
+
 permissions:
   contents: read
+
 jobs:
   release-draft:
     permissions:
@@ -18,12 +20,10 @@ jobs:
       issues: write
     uses: coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.10.1
   build:
-    if: always()
+    if: failure() || cancelled()
     needs: ['release-draft']
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
       - run: exit 1
         name: "Catch errors"
-        if: |-
-          needs.release-draft.result == 'failure'
     permissions: {}

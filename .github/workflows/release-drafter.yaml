@@ -64,9 +64,16 @@ jobs:
     steps:
       - uses: release-drafter/release-drafter@4d75298e00d9e34c483e5ff8c68d0ea1c1940c1e # v7.5.1
         id: update-release-draft
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          commitish: '${{ inputs.commitish }}'
-          config-name: '${{ inputs.config-name }}'
-          publish: '${{ inputs.publish }}'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commitish: "${{ inputs.commitish }}"
+          config-name: "${{ inputs.config-name }}"
+          publish: "${{ inputs.publish }}"
+  autolabel:
+    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+    runs-on: ubuntu-slim
+    steps:
+      - uses: release-drafter/release-drafter/autolabeler@4d75298e00d9e34c483e5ff8c68d0ea1c1940c1e # v7.5.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          config-name: "${{ inputs.config-name }}"

@@ -4,40 +4,50 @@ change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
 change-title-escapes: '\<*_&'
 categories:
   - title: "🔥 BREAKING CHANGES"
-    labels:
-      - "breaking-change"
+    semver-increment: "major"
+    when:
+      label: "breaking-change"
   - title: "🚀 Features"
-    labels:
-      - "enhancement"
+    semver-increment: "minor"
+    when:
+      label: "enhancement"
   - title: "🐛 Bug Fixes"
-    labels:
-      - "bug-fix"
+    semver-increment: "patch"
+    when:
+      label: "bug-fix"
   - title: "👷 Chores"
-    labels:
-      - "chore"
+    semver-increment: "patch"
+    when:
+      label: "chore"
   - title: "⚡️ Deprecations"
-    labels:
-      - "deprecation"
+    semver-increment: "patch"
+    when:
+      label: "deprecation"
   - title: "⬆️ Dependencies Upgraded"
-    labels:
-      - "dependency"
-exclude-labels:
-  - "skip-changelog"
+    semver-increment: "patch"
+    when:
+      label: "dependency"
+  - type: "pre-exclude"
+    when:
+      label: "skip-changelog"
+  - type: "version-resolver"
+    semver-increment: "major"
+    when:
+      label: "major"
+  - type: "version-resolver"
+    semver-increment: "minor"
+    when:
+      label: "minor"
+  - type: "version-resolver"
+    semver-increment: "patch"
+    when:
+      label: "patch"
+  - type: "version-resolver"
+    semver-increment: "patch"
 replacers:
   # https://github.com/release-drafter/release-drafter/issues/569#issuecomment-645938155
   - search: '(?:and )?@dependabot(?:\[bot\])?,?'
     replace: ""
-version-resolver:
-  major:
-    labels:
-      - "major"
-  minor:
-    labels:
-      - "minor"
-  patch:
-    labels:
-      - "patch"
-  default: patch
 exclude-contributors:
   - "dependabot"
 autolabeler:

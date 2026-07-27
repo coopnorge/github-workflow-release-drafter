@@ -62,7 +62,7 @@ jobs:
       html_url: ${{ steps.update-release-draft.outputs.html_url }}
       upload_url: ${{ steps.update-release-draft.outputs.upload_url }}
     steps:
-      - uses: release-drafter/release-drafter@4d75298e00d9e34c483e5ff8c68d0ea1c1940c1e # v7.5.1
+      - uses: release-drafter/release-drafter@eada3c96a64734dd381cfbda23511034e328ddb0 # v7.6.0
         id: update-release-draft
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -73,7 +73,7 @@ jobs:
     if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
     runs-on: ubuntu-slim
     steps:
-      - uses: release-drafter/release-drafter/autolabeler@4d75298e00d9e34c483e5ff8c68d0ea1c1940c1e # v7.5.1
+      - uses: release-drafter/release-drafter/autolabeler@eada3c96a64734dd381cfbda23511034e328ddb0 # v7.6.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           config-name: "${{ inputs.config-name }}"

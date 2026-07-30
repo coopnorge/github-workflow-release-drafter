@@ -96,6 +96,6 @@ autolabeler:
       - '/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i'
     body:
       - "/BREAKING CHANGE:/"
-template: |
+template: |-
   ## What's Changed
   $CHANGES

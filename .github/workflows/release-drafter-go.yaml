@@ -151,8 +151,7 @@ jobs:
             })
   draft-release:
     name: Draft Release
-    uses: >-
-      ./.github/workflows/release-drafter.yaml
+    uses: ./.github/workflows/release-drafter.yaml
     with:
       config-name: "${{ inputs.config-name }}"
       commitish: "${{ inputs.commitish }}"

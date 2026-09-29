@@ -73,10 +73,10 @@ jobs:
     name: Label PR (Golang)
     runs-on: ubuntu-slim
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-go@v7.0.0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: "${{ inputs.project-path }}/go.mod"
           cache-dependency-path: "${{ inputs.project-path }}/go.sum"
@@ -136,7 +136,7 @@ jobs:
             echo "No Go changes detected."
             echo "semver-type=patch" >> $GITHUB_OUTPUT
           fi
-      - uses: actions/github-script@v9.0.0
+      - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         if: github.event_name == 'pull_request'
         env:
           LABEL: "${{ steps.apidiff.outputs.semver-type }}"

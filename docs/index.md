@@ -94,7 +94,7 @@ Supported labels to help with changelog grouping:
 - "enhancements"
 - "bug-fix"
 - "deprecation"
-- "breaking-change"
+- "breaking-change-detected"
 
 After you have merged the PR, the draft release will be created/updated.
 The draft release will be based on the PRs merged since the last release.
@@ -103,15 +103,43 @@ The draft release will also contain a changelog based on the PRs merged.
 When you are ready to release, you can publish the release draft.
 This will create a new release and tag the release with the version number.
 
-**NOTE:** For golang project(`release-drafter-go.yaml`),
-the workflow try to check if exported interfaces are compatible or not using,
-[apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff).
-If any exported interfaces is not compatible,
-the workflow will add a label `major` to the PR.
-If all exported interfaces are compatible,
-the workflow will add a label `minor` to the PR.
-And if there are no changes to exported interfaces,
-the workflow will add a label `patch` to the PR.
+**NOTE:** For golang projects (`release-drafter-go.yaml`) the workflow checks
+exported interfaces with [apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff).
+Major versions are never bumped automatically.
+
+| Detected change | Result |
+| :--- | :--- |
+| Incompatible change, same module path | CI fails, PR gets `breaking-change-detected` |
+| Module path gets a new `/vN` suffix (v1 to v2 and later) | `release-drafter-go:major` |
+| Incompatible change matching `ignore-major-changes-for-pattern` | `release-drafter-go:minor` |
+| Compatible change | `release-drafter-go:minor` |
+| No exported API change | `release-drafter-go:patch` |
+
+The cause of a break (own code or a dependency) does not matter, only its
+effect on the exported API. v0 to v1 is always a manual release.
+A `!` in the PR title or `BREAKING CHANGE:` in the body also applies
+`breaking-change-detected`.
+
+`breaking-change-detected` is re-applied on every run, so removing it has no
+effect. Approval is enforced with policy-bot: add this rule to the `.policy.yml`
+of the repository, add `Breaking change review` to `policy.approval` with `and`,
+and require the policy-bot status (not the Go labeling job) to merge:
+
+```yaml
+approval_rules:
+- name: Breaking change review
+  if:
+    has_labels:
+    - breaking-change-detected
+  requires:
+    count: 1
+    teams:
+    - coopnorge/engineering-community-leadership
+  options:
+    invalidate_on_push: true
+    request_review:
+      enabled: true
+```
 
 ## Configuration
 

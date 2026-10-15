@@ -93,62 +93,78 @@ jobs:
         id: apidiff
         run: |
           cd ${{ inputs.project-path }}
+          IGNORE_PATTERN='${{ inputs.ignore-major-changes-for-pattern }}'
+          NEW_MODULE=$(sed -n 's/^module[[:space:]]\+\(\S\+\).*/\1/p' go.mod | head -n1)
           git diff --name-only origin/main HEAD | grep '\.go$' > changes.txt || true
-          if [ -s changes.txt ]; then
-            echo "Detected Go changes. Checking API diff..."
-
-            apidiff -m -w new.txt ./...
-
-            git checkout origin/main
-            apidiff -m -w old.txt ./...
-
-            DIFFERENCE=$(apidiff -m old.txt new.txt)
-            if [ "$DIFFERENCE" != "" ]; then
-              echo "API diff detected. $DIFFERENCE"
-
-              if echo "$DIFFERENCE" | grep -q -i "incompatible change"; then
-                if [ "${{ inputs.ignore-major-changes-for-pattern }}" != "" ]; then
-
-                  if apidiff -m -incompatible old.txt new.txt | grep -qvE "${{ inputs.ignore-major-changes-for-pattern }}"; then
-                    # If the change is not ignored by the pattern, bump major
-                    echo "Incompatible API change detected."
-                    echo "semver-type=major" >> $GITHUB_OUTPUT
-                  else
-                    echo "Incompatible API change detected, but ignored by pattern."
-                    echo "semver-type=minor" >> $GITHUB_OUTPUT
-                  fi
-                else
-                  echo "Incompatible API change detected."
-                  echo "semver-type=major" >> $GITHUB_OUTPUT
-                fi
-              elif echo "$DIFFERENCE" | grep -q -i "compatible change"; then
-                echo "Compatible API change detected."
-                echo "semver-type=minor" >> $GITHUB_OUTPUT
-              else
-                echo "Non-breaking API change detected."
-                echo "semver-type=patch" >> $GITHUB_OUTPUT
-              fi
-            else
-              echo "No API diff detected."
-              echo "semver-type=patch" >> $GITHUB_OUTPUT
-            fi
-          else
+          if [ ! -s changes.txt ]; then
             echo "No Go changes detected."
+            echo "semver-type=patch" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Detected Go changes. Checking API diff..."
+          apidiff -m -w new.txt ./...
+          git checkout origin/main
+          OLD_MODULE=$(sed -n 's/^module[[:space:]]\+\(\S\+\).*/\1/p' go.mod | head -n1)
+          apidiff -m -w old.txt ./...
+          DIFFERENCE=$(apidiff -m old.txt new.txt)
+
+          if [ -z "$DIFFERENCE" ]; then
+            echo "No API diff detected."
+            echo "semver-type=patch" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "API diff detected. $DIFFERENCE"
+
+          if echo "$DIFFERENCE" | grep -q -i "incompatible change"; then
+            # An intentional major bump changes the module path to a new /vN suffix.
+            NEW_MAJOR=$(echo "$NEW_MODULE" | sed -n 's|.*/v\([0-9]\+\)$|\1|p')
+            OLD_MAJOR=$(echo "$OLD_MODULE" | sed -n 's|.*/v\([0-9]\+\)$|\1|p')
+            if [ -n "$NEW_MAJOR" ] && [ "$NEW_MAJOR" != "$OLD_MAJOR" ]; then
+              echo "Module path changed from $OLD_MODULE to $NEW_MODULE, intentional major version."
+              echo "semver-type=major" >> $GITHUB_OUTPUT
+            elif [ -n "$IGNORE_PATTERN" ] && ! apidiff -m -incompatible old.txt new.txt | grep -qvE "$IGNORE_PATTERN"; then
+              echo "Incompatible API change detected, but ignored by pattern."
+              echo "semver-type=minor" >> $GITHUB_OUTPUT
+            else
+              echo "Incompatible API change detected."
+              echo "semver-type=breaking" >> $GITHUB_OUTPUT
+            fi
+          elif echo "$DIFFERENCE" | grep -q -i "compatible change"; then
+            echo "Compatible API change detected."
+            echo "semver-type=minor" >> $GITHUB_OUTPUT
+          else
+            echo "Non-breaking API change detected."
             echo "semver-type=patch" >> $GITHUB_OUTPUT
           fi
       - uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
-        if: github.event_name == 'pull_request'
         env:
-          LABEL: "${{ steps.apidiff.outputs.semver-type }}"
+          RESULT: "${{ steps.apidiff.outputs.semver-type }}"
         with:
           script: |
-            const { LABEL } = process.env;
-            github.rest.issues.addLabels({
+            const { RESULT } = process.env;
+            const params = {
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: [`release-drafter-go:${LABEL}`]
-            })
+            };
+            const current = await github.paginate(github.rest.issues.listLabelsOnIssue, params);
+            for (const l of current) {
+              if (l.name.startsWith("release-drafter-go:") || l.name === "breaking-change-detected") {
+                await github.rest.issues.removeLabel({ ...params, name: l.name });
+              }
+            }
+            const labels = RESULT === "breaking"
+              ? ["breaking-change-detected"]
+              : [`release-drafter-go:${RESULT}`];
+            await github.rest.issues.addLabels({ ...params, labels });
+            if (RESULT === "breaking") {
+              core.setFailed(
+                "Incompatible Go API change detected. Major versions must be intentional: " +
+                "change the module path to a new /vN suffix, or get approval from " +
+                "coopnorge/engineering-community-leadership (triggered by the breaking-change-detected label)."
+              );
+            }
   draft-release:
     name: Draft Release
     uses: ./.github/workflows/release-drafter.yaml

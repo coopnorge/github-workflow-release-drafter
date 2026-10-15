@@ -67,14 +67,6 @@ autolabeler:
       # matches in format of "feat: ..."
       # or "feat(scope): ..."
       - '/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "major"
-    title:
-      # matches in format of "fix!: ..."
-      # or "fix!(scope): ..."
-      # or "fix(scope)!: ..."
-      - '/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i'
-    body:
-      - "/BREAKING CHANGE:/"
   # labels to help with changelog grouping
   - label: "dependency"
     title:
@@ -91,7 +83,7 @@ autolabeler:
   - label: "deprecation"
     title:
       - '/^deprecated(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "breaking-change"
+  - label: "breaking-change-detected"
     title:
       - '/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i'
     body:

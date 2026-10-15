@@ -1,8 +1,10 @@
 policy:
   approval:
-  - or:
-    - Dependency updates
-    - Code change
+  - and:
+    - or:
+      - Dependency updates
+      - Code change
+    - Breaking change review
 approval_rules:
 - name: Dependency updates
   if:
@@ -37,6 +39,21 @@ approval_rules:
     - coopnorge/cloud-platform
   options:
     invalidate_on_push: true
+    methods:
+      github_review: true
+      comments: []
+- name: Breaking change review
+  if:
+    has_labels:
+    - breaking-change-detected
+  requires:
+    count: 1
+    teams:
+    - coopnorge/engineering-community-leadership
+  options:
+    invalidate_on_push: true
+    request_review:
+      enabled: true
     methods:
       github_review: true
       comments: []

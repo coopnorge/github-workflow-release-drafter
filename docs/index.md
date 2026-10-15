@@ -1,10 +1,11 @@
 # Release Drafter GitHub Workflow
 
-This workflow will create a release draft based on the PRs merged since
-the last release. It will also create a changelog based on the PRs merged.
+This workflow will create a release draft based on the PRs merged since the last
+release. It will also create a changelog based on the PRs merged.
 
-It will also try to assign labels to PR based on the title of the PR.
-The labels is defined [here](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
+It will also try to assign labels to PR based on the title of the PR. The labels
+are defined in the
+[release-drafter.yml configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml).
 
 ## Usage
 
@@ -34,7 +35,7 @@ jobs:
       coopnorge/github-workflow-release-drafter/.github/workflows/release-drafter.yaml@v0.8.0
 ```
 
-**OR** for golang project
+**OR** for Go project
 
 ```yaml
 name: Release Drafter
@@ -70,48 +71,56 @@ specify the `project-path`.
 **NOTE:** `secrets: inherit` should be used if you reference other
 internal/private repositories
 
-2. Create a `.github/release-drafter.yml` file in your repository.
-Copy the
-[default configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
-and modify it to your needs.
+2. Create a `.github/release-drafter.yml` file in your repository. Copy the
+   [default configuration](https://github.com/coopnorge/github-workflow-release-drafter/blob/main/.github/release-drafter.yml)
+   and modify it to your needs.
 
 ## How it works
 
-When a PR is created, this workflow will check the PR title and
-try to assign labels to the PR based on the title. If you do not agree
-with the labels assigned you can assign new labels yourself.
+When a PR is created, this workflow will check the PR title and try to assign
+labels to the PR based on the title. If you do not agree with the labels
+assigned you can assign new labels yourself.
 
-Supported labels for version bumping (only one label is taken into account, in order):
+Supported labels for version bumping (only one label is taken into account, in
+order):
 
-- "major" (bump X.0.0)
-- "minor" (bump 0.X.0)
-- "patch" (bump 0.0.X)
+- "release-drafter:major" (bump X.0.0)
+- "release-drafter:minor" (bump 0.X.0)
+- "release-drafter:patch" (bump 0.0.X)
 
 Supported labels to help with changelog grouping:
-  
-- "dependency"
-- "chore"
-- "enhancements"
-- "bug-fix"
-- "deprecation"
-- "breaking-change"
 
-After you have merged the PR, the draft release will be created/updated.
-The draft release will be based on the PRs merged since the last release.
-The draft release will also contain a changelog based on the PRs merged.
+- "release-drafter:dependency"
+- "release-drafter:chore"
+- "release-drafter:enhancement"
+- "release-drafter:bug-fix"
+- "release-drafter:deprecation"
+- "release-drafter:breaking-change"
 
-When you are ready to release, you can publish the release draft.
-This will create a new release and tag the release with the version number.
+Dependency updates are always labeled "release-drafter:dependency" and
+"release-drafter:patch", and are grouped under "Dependencies Upgraded". A PR is
+treated as a dependency update if its title starts with `Bump`, has a `deps` or
+`deps-dev` scope (for example `chore(deps): ...` or `fix(deps-dev): ...`), or
+comes from a `renovate/` or `dependabot/` branch. No other labels are applied
+automatically, so features or breaking changes in the updated dependency do not
+affect the version bump. Add "release-drafter:breaking-change" and
+"release-drafter:major" manually when needed.
 
-**NOTE:** For golang project(`release-drafter-go.yaml`),
-the workflow try to check if exported interfaces are compatible or not using,
-[apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff).
-If any exported interfaces is not compatible,
-the workflow will add a label `major` to the PR.
-If all exported interfaces are compatible,
-the workflow will add a label `minor` to the PR.
-And if there are no changes to exported interfaces,
-the workflow will add a label `patch` to the PR.
+After you have merged the PR, the draft release will be created/updated. The
+draft release will be based on the PRs merged since the last release. The draft
+release will also contain a changelog based on the PRs merged.
+
+When you are ready to release, you can publish the release draft. This will
+create a new release and tag the release with the version number.
+
+**NOTE:** For Go project(`release-drafter-go.yaml`), the workflow try to check
+if exported interfaces are compatible or not using,
+[apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff). If any exported
+interfaces is not compatible, the workflow will add a label
+`release-drafter-go:major` to the PR. If all exported interfaces are compatible,
+the workflow will add a label `release-drafter-go:minor` to the PR. And if there
+are no changes to exported interfaces, the workflow will add a label
+`release-drafter-go:patch` to the PR.
 
 ## Configuration
 
@@ -120,31 +129,31 @@ the workflow will add a label `patch` to the PR.
 Required Secret:
 
 |          Secret          | Description                                                                                                                                                                          |
-|:------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `REVIEWBOT_GITHUB_TOKEN` | A GitHub personal access token with `repo` scope. This secret should be defined in the caller repo or at the org level. It must be inhereted in the workflow with `secrets: inherit` |
+| :----------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REVIEWBOT_GITHUB_TOKEN` | A GitHub personal access token with `repo` scope. This secret should be defined in the caller repo or at the org level. It must be inherited in the workflow with `secrets: inherit` |
 
 Supported configuration options:
 
-| Option | Description| Required | Default |
-| :---: | :--- | :---: | :---: |
-| `config-name` | The name of the configuration file to use| `false` | `release-drafter.yml` |
-| `commitish` | Commitish to use when calculating the version bump. Defaults to the pull request base branch. | `false` | `main` |
-| `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
+|    Option     | Description                                                                                 | Required |        Default        |
+| :-----------: | :------------------------------------------------------------------------------------------ | :------: | :-------------------: |
+| `config-name` | The name of the configuration file to use                                                   | `false`  | `release-drafter.yml` |
+|  `commitish`  | Git ref to use when calculating the version bump. Defaults to the pull request base branch. | `false`  |        `main`         |
+|   `publish`   | Publish the release draft when the PR is merged.                                            | `false`  |        `false`        |
 
 ### release-drafter-go.yml
 
 Required Secret:
 
 |          Secret          | Description                                                                                                                                                                          |
-|:------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `REVIEWBOT_GITHUB_TOKEN` | A GitHub personal access token with `repo` scope. This secret should be defined in the caller repo or at the org level. It must be inhereted in the workflow with `secrets: inherit` |
+| :----------------------: | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `REVIEWBOT_GITHUB_TOKEN` | A GitHub personal access token with `repo` scope. This secret should be defined in the caller repo or at the org level. It must be inherited in the workflow with `secrets: inherit` |
 
 Supported configuration options:
 
-| Option | Description| Required | Default |
-| :---: | :--- | :---: | :---: |
-| `config-name` | The name of the configuration file to use| `false` | `release-drafter.yml` |
-| `commitish` | Commitish to use when calculating the version bump. Defaults to the pull request base branch. | `false` | `main` |
-| `publish` | Publish the release draft when the PR is merged. | `false` | `false` |
-| `project-path` | The path to go project. | `false` | `.` |
-| `ignore-major-changes-for-pattern` | A regular expression pattern to match against incompatible changes. | `false` | `.` |
+|               Option               | Description                                                                                 | Required |        Default        |
+| :--------------------------------: | :------------------------------------------------------------------------------------------ | :------: | :-------------------: |
+|           `config-name`            | The name of the configuration file to use                                                   | `false`  | `release-drafter.yml` |
+|            `commitish`             | Git ref to use when calculating the version bump. Defaults to the pull request base branch. | `false`  |        `main`         |
+|             `publish`              | Publish the release draft when the PR is merged.                                            | `false`  |        `false`        |
+|           `project-path`           | The path to go project.                                                                     | `false`  |          `.`          |
+| `ignore-major-changes-for-pattern` | A regular expression pattern to match against incompatible changes.                         | `false`  |          `.`          |

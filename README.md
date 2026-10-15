@@ -1,10 +1,11 @@
 # Release Drafter GitHub Actions Workflow
 
-This workflow will create a release draft based on the PRs merged since
-the last release. It will also create a changelog based on the PRs merged.
+This workflow will create a release draft based on the PRs merged since the last
+release. It will also create a changelog based on the PRs merged.
 
-It will also try to assign labels to PR based on the title of the PR.
-The labels are defined [here](.github/release-drafter.yml)
+It will also try to assign labels to PR based on the title of the PR. The labels
+are defined in the
+[release-drafter.yml configuration](.github/release-drafter.yml).
 
 ## Usage
 

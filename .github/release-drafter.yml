@@ -4,46 +4,52 @@ change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
 change-title-escapes: '\<*_&'
 categories:
   - title: "🔥 BREAKING CHANGES"
-    semver-increment: "major"
     when:
-      label: "breaking-change"
+      label: "release-drafter:breaking-change"
   - title: "🚀 Features"
-    semver-increment: "minor"
     when:
-      label: "enhancement"
+      label: "release-drafter:enhancement"
   - title: "🐛 Bug Fixes"
-    semver-increment: "patch"
     when:
-      label: "bug-fix"
+      label: "release-drafter:bug-fix"
   - title: "👷 Chores"
-    semver-increment: "patch"
     when:
-      label: "chore"
+      label: "release-drafter:chore"
   - title: "⚡️ Deprecations"
-    semver-increment: "patch"
     when:
-      label: "deprecation"
+      label: "release-drafter:deprecation"
   - title: "⬆️ Dependencies Upgraded"
-    semver-increment: "patch"
     when:
-      label: "dependency"
-  - type: "pre-exclude"
+      label: "release-drafter:dependency"
+  - type: pre-exclude
     when:
       label: "skip-changelog"
-  - type: "version-resolver"
-    semver-increment: "major"
+  - type: version-resolver
+    semver-increment: major
     when:
-      label: "major"
-  - type: "version-resolver"
-    semver-increment: "minor"
+      label: "release-drafter:major"
+  - type: version-resolver
+    semver-increment: major
     when:
-      label: "minor"
-  - type: "version-resolver"
-    semver-increment: "patch"
+      label: "release-drafter-go:major"
+  - type: version-resolver
+    semver-increment: minor
     when:
-      label: "patch"
-  - type: "version-resolver"
-    semver-increment: "patch"
+      label: "release-drafter:minor"
+  - type: version-resolver
+    semver-increment: minor
+    when:
+      label: "release-drafter-go:minor"
+  - type: version-resolver
+    semver-increment: patch
+    when:
+      label: "release-drafter:patch"
+  - type: version-resolver
+    semver-increment: patch
+    when:
+      label: "release-drafter-go:patch"
+  - type: version-resolver
+    semver-increment: patch
 replacers:
   # https://github.com/release-drafter/release-drafter/issues/569#issuecomment-645938155
   - search: '(?:and )?@dependabot(?:\[bot\])?,?'
@@ -57,17 +63,17 @@ autolabeler:
   # it provides good explanation what what the regex is doing
   # If that is not enough, ask chatgpt for help,
   # and then go back to playing with regex on regex101.com
-  - label: "patch"
+  - label: "release-drafter:patch"
     title:
       # matches in format of "fix: ..."
       # or "fix(scope): ..."
       - '/^(?:fix|chore|docs|doc|refactor|test|deprecated)(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "minor"
+  - label: "release-drafter:minor"
     title:
       # matches in format of "feat: ..."
       # or "feat(scope): ..."
       - '/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "major"
+  - label: "release-drafter:major"
     title:
       # matches in format of "fix!: ..."
       # or "fix!(scope): ..."
@@ -76,26 +82,26 @@ autolabeler:
     body:
       - "/BREAKING CHANGE:/"
   # labels to help with changelog grouping
-  - label: "dependency"
+  - label: "release-drafter:dependency"
     title:
-      - "/^Bump/" # Dependency update PR by depandabot
-  - label: "chore"
+      - '/^(?:Bump|(?:chore|build)\((?:deps|deps-dev)\):)\s.*/i' # Dependency update PR by Dependabot
+  - label: "release-drafter:chore"
     title:
       - '/^(?:docs|doc|chore|refactor|test)(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "enhancements"
+  - label: "release-drafter:enhancement"
     title:
       - '/^(?:feat|feature)(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "bug-fix"
+  - label: "release-drafter:bug-fix"
     title:
       - '/^fix(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "deprecation"
+  - label: "release-drafter:deprecation"
     title:
       - '/^deprecated(?:\((?:[^)]+)\))?:\s.*/i'
-  - label: "breaking-change"
+  - label: "release-drafter:breaking-change"
     title:
       - '/^(?:feat|feature|fix|chore|docs|doc|refactor|test|deprecated)(?:!(?:\((?:[^)]+)\))|(?:\((?:[^)]+)\))!|!):\s.*/i'
     body:
       - "/BREAKING CHANGE:/"
-template: |-
+template: |
   ## What's Changed
   $CHANGES

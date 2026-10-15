@@ -84,18 +84,18 @@ assigned you can assign new labels yourself.
 Supported labels for version bumping (only one label is taken into account, in
 order):
 
-- `major` (bump X.0.0)
-- `minor` (bump 0.X.0)
-- `patch` (bump 0.0.X)
+- `release-drafter:major` (bump X.0.0)
+- `release-drafter:minor` (bump 0.X.0)
+- `release-drafter:patch` (bump 0.0.X)
 
 Supported labels to help with changelog grouping:
 
-- `dependency`
-- `chore`
-- `enhancements`
-- `bug-fix`
-- `deprecation`
-- `breaking-change`
+- `release-drafter:dependency`
+- `release-drafter:chore`
+- `release-drafter:enhancement`
+- `release-drafter:bug-fix`
+- `release-drafter:deprecation`
+- `release-drafter:breaking-change`
 
 After you have merged the PR, the draft release will be created/updated. The
 draft release will be based on the PRs merged since the last release. The draft

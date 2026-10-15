@@ -52,7 +52,52 @@ permissions:
   pull-requests: write
 
 jobs:
+  resolve-config:
+    runs-on: ubuntu-slim
+    outputs:
+      config-name: ${{ steps.resolve.outputs.config-name }}
+    steps:
+      - name: Resolve release-drafter config
+        id: resolve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CONFIG_NAME: ${{ inputs.config-name }}
+          CALLER_REPO: ${{ github.repository }}
+          CALLER_OWNER: ${{ github.repository_owner }}
+          CALLER_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+          DEFAULT_REPO: ${{ job.workflow_repository }}
+          DEFAULT_SHA: ${{ job.workflow_sha }}
+        run: |
+          set -euo pipefail
+
+          # Names with a scheme or an explicit repo are left to release-drafter.
+          if [[ "$CONFIG_NAME" == *:* ]]; then
+            echo "config-name=$CONFIG_NAME" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ "$CONFIG_NAME" == /* ]]; then
+            path="${CONFIG_NAME#/}"
+          else
+            path=".github/$CONFIG_NAME"
+          fi
+
+          exists() {
+            gh api "repos/$1/contents/$path${2:+?ref=$2}" --silent 2>/dev/null
+          }
+
+          if exists "$CALLER_REPO" "$CALLER_REF"; then
+            echo "Using config from $CALLER_REPO"
+            echo "config-name=$CONFIG_NAME" >> "$GITHUB_OUTPUT"
+          elif [[ "$CALLER_REPO" != "$CALLER_OWNER/.github" ]] && exists "$CALLER_OWNER/.github"; then
+            echo "Using config from $CALLER_OWNER/.github"
+            echo "config-name=$CONFIG_NAME" >> "$GITHUB_OUTPUT"
+          else
+            echo "No config found, using default from $DEFAULT_REPO@$DEFAULT_SHA"
+            echo "config-name=$DEFAULT_REPO:/.github/release-drafter.yml@$DEFAULT_SHA" >> "$GITHUB_OUTPUT"
+          fi
   update-release-draft:
+    needs: resolve-config
     runs-on: ubuntu-slim
     outputs:
       id: ${{ steps.update-release-draft.outputs.id }}
@@ -67,13 +112,14 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commitish: "${{ inputs.commitish }}"
-          config-name: "${{ inputs.config-name }}"
+          config-name: "${{ needs.resolve-config.outputs.config-name }}"
           publish: "${{ inputs.publish }}"
   autolabel:
+    needs: resolve-config
     if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
     runs-on: ubuntu-slim
     steps:
       - uses: release-drafter/release-drafter/autolabeler@34d80673e067bdc0c24568d3af899c216adcfaa9 # v7.7.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          config-name: "${{ inputs.config-name }}"
+          config-name: "${{ needs.resolve-config.outputs.config-name }}"

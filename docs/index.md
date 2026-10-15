@@ -97,6 +97,15 @@ Supported labels to help with changelog grouping:
 - `release-drafter:deprecation`
 - `release-drafter:breaking-change`
 
+Dependency updates are always labeled `release-drafter:dependency` and
+`release-drafter:patch`, and are grouped under "Dependencies Upgraded". A PR is
+treated as a dependency update if its title starts with `Bump`, has a `deps` or
+`deps-dev` scope (for example `chore(deps): ...` or `fix(deps-dev): ...`), or
+comes from a `renovate/` or `dependabot/` branch. No other labels are applied
+automatically, so features or breaking changes in the updated dependency do not
+affect the version bump. Add `release-drafter:breaking-change` and
+`release-drafter:major` manually when needed.
+
 After you have merged the PR, the draft release will be created/updated. The
 draft release will be based on the PRs merged since the last release. The draft
 release will also contain a changelog based on the PRs merged.

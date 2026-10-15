@@ -4,8 +4,14 @@ change-template: "- $TITLE (#$NUMBER) @$AUTHOR"
 change-title-escapes: '\<*_&'
 categories:
   - title: "🔥 BREAKING CHANGES"
+    exclusive: true
     when:
       label: "release-drafter:breaking-change"
+  - title: "⬆️ Dependencies Upgraded"
+    collapse-after: 5
+    exclusive: true
+    when:
+      label: "release-drafter:dependency"
   - title: "🚀 Features"
     when:
       label: "release-drafter:enhancement"
@@ -18,9 +24,6 @@ categories:
   - title: "⚡️ Deprecations"
     when:
       label: "release-drafter:deprecation"
-  - title: "⬆️ Dependencies Upgraded"
-    when:
-      label: "release-drafter:dependency"
   - type: pre-exclude
     when:
       label: "skip-changelog"
@@ -63,6 +66,20 @@ autolabeler:
   # it provides good explanation what what the regex is doing
   # If that is not enough, ask chatgpt for help,
   # and then go back to playing with regex on regex101.com
+
+  # Dependency updates (Renovate, Dependabot or human) are always labeled
+  # "dependency" + "patch" and never evaluated by the rules below, so features
+  # or "BREAKING CHANGE:" text in upstream release notes cannot cause a
+  # minor/major bump. Add "release-drafter:breaking-change" and "release-drafter:major"
+  # manually if needed.
+  - labels: ["release-drafter:dependency", "release-drafter:patch"]
+    stop-on-match: true
+    title:
+      - "/^Bump/" # Dependabot
+      # matches "chore(deps): ...", "fix(deps-dev): ...", "build(deps)!: ..."
+      - '/^[a-z]+\(deps(?:-dev)?\)!?:\s.*/i'
+    branch:
+      - '/^(?:renovate|dependabot)\//'
   - label: "release-drafter:patch"
     title:
       # matches in format of "fix: ..."
@@ -82,9 +99,6 @@ autolabeler:
     body:
       - "/BREAKING CHANGE:/"
   # labels to help with changelog grouping
-  - label: "release-drafter:dependency"
-    title:
-      - '/^(?:Bump|(?:chore|build)\((?:deps|deps-dev)\):)\s.*/i' # Dependency update PR by Dependabot
   - label: "release-drafter:chore"
     title:
       - '/^(?:docs|doc|chore|refactor|test)(?:\((?:[^)]+)\))?:\s.*/i'

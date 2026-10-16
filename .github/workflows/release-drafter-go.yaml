@@ -89,6 +89,17 @@ jobs:
           fi
       - name: Install API DIff
         run: go install golang.org/x/exp/cmd/apidiff@latest
+      - name: Detect module path change
+        id: modpath
+        run: |
+          cd ${{ inputs.project-path }}
+          # A Go major bump (v1 -> v2 and beyond) requires changing the module path in go.mod.
+          if git diff origin/main HEAD -- go.mod | grep -qE '^[+-]module '; then
+            echo "go.mod module path changed."
+            echo "changed=true" >> $GITHUB_OUTPUT
+          else
+            echo "changed=false" >> $GITHUB_OUTPUT
+          fi
       - name: Get PR diff
         id: apidiff
         run: |
@@ -110,16 +121,19 @@ jobs:
                 if [ "${{ inputs.ignore-major-changes-for-pattern }}" != "" ]; then
 
                   if apidiff -m -incompatible old.txt new.txt | grep -qvE "${{ inputs.ignore-major-changes-for-pattern }}"; then
-                    # If the change is not ignored by the pattern, bump major
+                    # Not ignored by the pattern: flag as breaking, but never bump major here.
+                    # Major bumps are driven by the go.mod module path (see "Detect module path change").
                     echo "Incompatible API change detected."
-                    echo "semver-type=major" >> $GITHUB_OUTPUT
+                    echo "semver-type=minor" >> $GITHUB_OUTPUT
+                    echo "breaking=true" >> $GITHUB_OUTPUT
                   else
                     echo "Incompatible API change detected, but ignored by pattern."
                     echo "semver-type=minor" >> $GITHUB_OUTPUT
                   fi
                 else
                   echo "Incompatible API change detected."
-                  echo "semver-type=major" >> $GITHUB_OUTPUT
+                  echo "semver-type=minor" >> $GITHUB_OUTPUT
+                  echo "breaking=true" >> $GITHUB_OUTPUT
                 fi
               elif echo "$DIFFERENCE" | grep -q -i "compatible change"; then
                 echo "Compatible API change detected."
@@ -140,14 +154,20 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           LABEL: "${{ steps.apidiff.outputs.semver-type }}"
+          BREAKING: "${{ steps.apidiff.outputs.breaking }}"
+          MODULE_CHANGED: "${{ steps.modpath.outputs.changed }}"
         with:
           script: |
-            const { LABEL } = process.env;
-            github.rest.issues.addLabels({
+            const { LABEL, BREAKING, MODULE_CHANGED } = process.env;
+            // Major only when the module path changed; apidiff alone never bumps major.
+            const semver = MODULE_CHANGED === 'true' ? 'major' : LABEL;
+            const labels = [`release-drafter-go:${semver}`];
+            if (BREAKING === 'true') labels.push('release-drafter:breaking-change');
+            await github.rest.issues.addLabels({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              labels: [`release-drafter-go:${LABEL}`]
+              labels
             })
   draft-release:
     name: Draft Release
@@ -160,3 +180,51 @@ jobs:
       pull-requests: write
       contents: write
       issues: write
+  verify-major-bump:
+    if: github.event_name == 'pull_request'
+    name: Verify major bump is intentional
+    needs: draft-release
+    runs-on: ubuntu-slim
+    permissions:
+      pull-requests: read
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Verify
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR: ${{ github.event.pull_request.number }}
+          PROJECT_PATH: ${{ inputs.project-path }}
+        run: |
+          labels=$(gh pr view "$PR" --json labels --jq '.labels[].name')
+          if ! echo "$labels" | grep -qE '^release-drafter(-go)?:major$'; then
+            echo "No major bump requested."
+            exit 0
+          fi
+
+          cd "$PROJECT_PATH"
+          module=$(sed -n 's/^module[[:space:]]\+\(\S\+\).*/\1/p' go.mod | head -1)
+          latest=$(git tag --list 'v[0-9]*' | sort -V | tail -1)
+          latest_major=${latest#v}; latest_major=${latest_major%%.*}
+          latest_major=${latest_major:-0}
+
+          if [ "$latest_major" = "0" ]; then
+            # v0 -> v1: no path change, so require an explicit human label.
+            if echo "$labels" | grep -qx 'release-drafter-go:allow-v1'; then
+              echo "Leaving v0 explicitly allowed via release-drafter-go:allow-v1."
+              exit 0
+            fi
+            echo "::error::A major label would take this module out of v0 (latest tag: ${latest:-none}). Breaking changes are allowed in v0. If you really want v1.0.0, add the label 'release-drafter-go:allow-v1'; otherwise remove the major label."
+            exit 1
+          fi
+
+          # v1+: a major bump requires the module path to carry the next major (/vN+1).
+          next=$((latest_major + 1))
+          if echo "$module" | grep -qE "/v${next}$"; then
+            echo "Module path is ${module}, matching v${next}."
+            exit 0
+          fi
+          echo "::error::A major label would release v${next}.0.0, but go.mod module path is '${module}' (expected a '/v${next}' suffix). Remove the major label, or update go.mod and all import paths."
+          exit 1

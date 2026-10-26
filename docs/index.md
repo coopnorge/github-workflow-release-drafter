@@ -104,14 +104,21 @@ release will also contain a changelog based on the PRs merged.
 When you are ready to release, you can publish the release draft. This will
 create a new release and tag the release with the version number.
 
-**NOTE:** For Go project(`release-drafter-go.yaml`), the workflow try to check
-if exported interfaces are compatible or not using,
-[apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff). If any exported
-interfaces is not compatible, the workflow will add a label
-`release-drafter-go:major` to the PR. If all exported interfaces are compatible,
-the workflow will add a label `minor` to the PR. And if there are no changes to
-exported interfaces, the workflow will add a label `release-drafter-go:patch` to
-the PR.
+**NOTE:** For Go projects (`release-drafter-go.yaml`), the workflow checks
+exported interfaces using
+[apidiff](https://pkg.go.dev/golang.org/x/exp/cmd/apidiff):
+
+- Incompatible changes add `release-drafter-go:minor` and
+  `release-drafter:breaking-change` (listed under breaking changes, but never a
+  major bump).
+- Compatible changes add `release-drafter-go:minor`. No exported changes add
+  `release-drafter-go:patch`.
+- Changing the `module` line in `go.mod` (for example adding `/v2`) adds
+  `release-drafter-go:major`. In Go, a major bump from v1 requires this change.
+- A `verify-major-bump` check fails the PR if a major label is present but the
+  bump is not intentional: in v0 it requires the explicit label
+  `release-drafter-go:allow-v1`; from v1 and up the module path must end with
+  the next major version (`/vN+1`).
 
 ## Configuration
 

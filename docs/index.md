@@ -119,6 +119,15 @@ exported interfaces using
   bump is not intentional: in v0 it requires the explicit label
   `release-drafter-go:allow-v1`; from v1 and up the module path must end with
   the next major version (`/vN+1`).
+- While the latest tag is v0, a PR with `release-drafter:major`,
+  `release-drafter-go:major` or `release-drafter:breaking-change` (for example a
+  `feat!:` title) is relabelled: the major labels are removed and
+  `release-drafter:minor` plus `release-drafter:breaking-change` are set, so the
+  change is a v0 minor bump and still listed under breaking changes. Add
+  `release-drafter-go:allow-v1` to keep the major label and release v1.0.0. The
+  relabelling runs after the `autolabeler` on every PR event, so it wins when
+  the `autolabeler` re-adds the major label. Repos at v1 or later, and repos
+  without version tags, are not affected.
 
 ## Configuration
 

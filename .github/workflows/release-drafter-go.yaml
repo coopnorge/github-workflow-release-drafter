@@ -69,7 +69,10 @@ permissions:
 
 jobs:
   label-pr-go:
-    if: github.event_name == 'pull_request'
+    # Runs after draft-release so it sees (and overrides) the labels the
+    # autolabeler job adds on every pull_request event.
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
+    needs: draft-release
     name: Label PR (Golang)
     runs-on: ubuntu-slim
     steps:
@@ -99,6 +102,21 @@ jobs:
             echo "changed=true" >> $GITHUB_OUTPUT
           else
             echo "changed=false" >> $GITHUB_OUTPUT
+          fi
+      - name: Detect v0 module
+        id: v0
+        run: |
+          cd ${{ inputs.project-path }}
+          latest=$(git tag --list 'v[0-9]*' | sort -V | tail -1)
+          if [ -z "$latest" ]; then
+            echo "No version tags found."
+            echo "is-v0=false" >> $GITHUB_OUTPUT
+          elif [ "${latest#v}" != "${latest#v0.}" ]; then
+            echo "Latest tag ${latest} is in v0."
+            echo "is-v0=true" >> $GITHUB_OUTPUT
+          else
+            echo "Latest tag ${latest} is not in v0."
+            echo "is-v0=false" >> $GITHUB_OUTPUT
           fi
       - name: Get PR diff
         id: apidiff
@@ -156,19 +174,44 @@ jobs:
           LABEL: "${{ steps.apidiff.outputs.semver-type }}"
           BREAKING: "${{ steps.apidiff.outputs.breaking }}"
           MODULE_CHANGED: "${{ steps.modpath.outputs.changed }}"
+          IS_V0: "${{ steps.v0.outputs.is-v0 }}"
         with:
           script: |
-            const { LABEL, BREAKING, MODULE_CHANGED } = process.env;
+            const { LABEL, BREAKING, MODULE_CHANGED, IS_V0 } = process.env;
+            const { owner, repo } = context.repo;
+            const issue_number = context.issue.number;
+            const MAJOR = ['release-drafter:major', 'release-drafter-go:major'];
+
+            // Read live labels: the autolabeler may have changed them since the event fired.
+            const current = new Set(
+              (await github.paginate(github.rest.issues.listLabelsOnIssue, { owner, repo, issue_number }))
+                .map(l => l.name)
+            );
+
             // Major only when the module path changed; apidiff alone never bumps major.
-            const semver = MODULE_CHANGED === 'true' ? 'major' : LABEL;
-            const labels = [`release-drafter-go:${semver}`];
-            if (BREAKING === 'true') labels.push('release-drafter:breaking-change');
-            await github.rest.issues.addLabels({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              labels
-            })
+            let semver = MODULE_CHANGED === 'true' ? 'major' : LABEL;
+            const add = new Set();
+            const remove = new Set();
+            if (BREAKING === 'true') add.add('release-drafter:breaking-change');
+
+            // At v0, breaking changes are a minor bump. v0 -> v1 needs an explicit allow-v1 label.
+            const demote = IS_V0 === 'true' && !current.has('release-drafter-go:allow-v1') &&
+              (semver === 'major' || MAJOR.some(l => current.has(l)) ||
+                current.has('release-drafter:breaking-change') || BREAKING === 'true');
+            if (demote) {
+              semver = 'minor';
+              MAJOR.forEach(l => remove.add(l));
+              add.add('release-drafter:minor');
+              add.add('release-drafter:breaking-change');
+            }
+            add.add(`release-drafter-go:${semver}`);
+
+            for (const name of remove) {
+              if (current.has(name)) {
+                await github.rest.issues.removeLabel({ owner, repo, issue_number, name });
+              }
+            }
+            await github.rest.issues.addLabels({ owner, repo, issue_number, labels: [...add] });
   draft-release:
     name: Draft Release
     uses: ./.github/workflows/release-drafter.yaml
@@ -181,9 +224,9 @@ jobs:
       contents: write
       issues: write
   verify-major-bump:
-    if: github.event_name == 'pull_request'
+    if: ${{ !cancelled() && github.event_name == 'pull_request' }}
     name: Verify major bump is intentional
-    needs: draft-release
+    needs: [draft-release, label-pr-go]
     runs-on: ubuntu-slim
     permissions:
       pull-requests: read
